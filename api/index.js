@@ -6,10 +6,33 @@ app.use(express.json());
 
 app.post('/api/generate-pdf', (req, res) => {
   try {
-    const { name, details } = req.body;
+    const { 
+      poNo,
+      eprNo,
+      requestedBy,
+      date,
+      budgetYear,
+      to,
+      deliveryTo,
+      items,
+      budgetSpent
+    } = req.body;
 
-    if (!name || !details) {
-      return res.status(400).json({ error: 'Name and details are required' });
+    // Validate required fields
+    const missingFields = [];
+    if (!poNo) missingFields.push('poNo');
+    if (!eprNo) missingFields.push('eprNo');
+    if (!requestedBy) missingFields.push('requestedBy');
+    if (!to || !Array.isArray(to)) missingFields.push('to (array)');
+    if (!deliveryTo || !Array.isArray(deliveryTo)) missingFields.push('deliveryTo (array)');
+    if (!items || !Array.isArray(items)) missingFields.push('items (array)');
+    if (!budgetSpent || !Array.isArray(budgetSpent)) missingFields.push('budgetSpent (array)');
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({ 
+        error: 'Missing required fields', 
+        missingFields: missingFields.join(', ')
+      });
     }
 
     // Create a new PDF document
@@ -36,83 +59,142 @@ app.post('/api/generate-pdf', (req, res) => {
        .font('Helvetica-Bold')
        .text('PO No:', 50, 150)
        .font('Helvetica')
-       .text('Prefix-000001', 150, 150)
+       .text(poNo, 150, 150)
        
        .font('Helvetica-Bold')
        .text('EPR No:', 50, 170)
        .font('Helvetica')
-       .text('Prefix-0001', 150, 170)
+       .text(eprNo, 150, 170)
        
        .font('Helvetica-Bold')
        .text('Requested By:', 50, 190)
        .font('Helvetica')
-       .text('Text data', 150, 190);
+       .text(requestedBy, 150, 190);
 
     // Add header information (right side)
     doc.fontSize(10)
        .font('Helvetica-Bold')
        .text('Date (YYYY-MM-DD):', 300, 150)
        .font('Helvetica')
-       .text(new Date().toLocaleDateString('en-CA'), 400, 150)
+       .text(date || new Date().toLocaleDateString('en-CA'), 400, 150)
        
        .font('Helvetica-Bold')
        .text('Budget Year:', 300, 170)
        .font('Helvetica')
-       .text('value2', 400, 170);
+       .text(budgetYear, 400, 170);
 
     // Add delivery information
     doc.fontSize(10)
        .font('Helvetica-Bold')
        .text('To:', 50, 220)
        .font('Helvetica')
-       .text('Text data\nText data\nText data\nText data, Text data Text data', 150, 220)
+       .text(to.join('\n'), 150, 220)
        
        .font('Helvetica-Bold')
        .text('Delivery To:', 300, 220)
        .font('Helvetica')
-       .text('Attn: Library\nThe Alice Smith School\nText data\nText data\nText data', 400, 220);
+       .text(deliveryTo.join('\n'), 400, 220);
 
-    // Add table headers
+    // Draw first table
     const tableTop = 340;
-    doc.font('Helvetica-Bold')
-       .rect(50, tableTop, 500, 20).fill('#e8e8e8')
-       .fillColor('black')
-       .text('Budget Code', 55, tableTop + 5)
-       .text('Description', 130, tableTop + 5)
-       .text('Quantity', 230, tableTop + 5)
-       .text('Unit Price', 300, tableTop + 5)
-       .text('Discount', 370, tableTop + 5)
-       .text('Total', 440, tableTop + 5)
-       .text('Total in MYR', 490, tableTop + 5);
+    const colWidths = [75, 100, 60, 70, 70, 70, 70];
+    let currentX = 50;
 
-    // Add table row
-    doc.font('Helvetica')
-       .text('Text data', 55, tableTop + 30)
-       .text('Text data\nText value', 130, tableTop + 30)
-       .text('3,810', 230, tableTop + 30)
-       .text('9,597.00', 300, tableTop + 30)
-       .text('3,586.00', 370, tableTop + 30)
-       .text('4,334.00\nMYR', 440, tableTop + 30)
-       .text('3,457.00\nMYR', 490, tableTop + 30);
+    // Draw table header with borders
+    doc.rect(50, tableTop, 515, 20).stroke();
+    doc.rect(50, tableTop, 515, 20).fill('#e8e8e8');
+    
+    // Add header texts and vertical lines
+    const headers = ['Budget Code', 'Description', 'Quantity', 'Unit Price', 'Discount', 'Total', 'Total in MYR'];
+    headers.forEach((header, i) => {
+      doc.font('Helvetica-Bold')
+         .fillColor('black')
+         .text(header, currentX + 5, tableTop + 5, { width: colWidths[i] });
+      
+      // Draw vertical lines
+      if (i < headers.length) {
+        doc.moveTo(currentX, tableTop)
+           .lineTo(currentX, tableTop + 60)
+           .stroke();
+      }
+      currentX += colWidths[i];
+    });
+    // Last vertical line
+    doc.moveTo(currentX, tableTop)
+       .lineTo(currentX, tableTop + 60)
+       .stroke();
 
-    // Add second table
+    // Draw horizontal line after header
+    doc.moveTo(50, tableTop + 20)
+       .lineTo(565, tableTop + 20)
+       .stroke();
+
+    // Add table data
+    currentX = 50;
+    items.forEach((item, index) => {
+      const rowY = tableTop + 25;
+      doc.font('Helvetica').fontSize(10);
+      doc.text(item.budgetCode, currentX + 5, rowY);
+      doc.text(item.description, currentX + colWidths[0] + 5, rowY);
+      doc.text(item.quantity.toString(), currentX + colWidths[0] + colWidths[1] + 5, rowY);
+      doc.text(item.unitPrice.toString(), currentX + colWidths[0] + colWidths[1] + colWidths[2] + 5, rowY);
+      doc.text(item.discount.toString(), currentX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 5, rowY);
+      doc.text(item.total + '\nMYR', currentX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 5, rowY);
+      doc.text(item.totalMYR + '\nMYR', currentX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 5, rowY);
+    });
+
+    // Draw bottom border of first table
+    doc.moveTo(50, tableTop + 60)
+       .lineTo(565, tableTop + 60)
+       .stroke();
+
+    // Draw second table
     const table2Top = 450;
-    doc.font('Helvetica-Bold')
-       .rect(50, table2Top, 500, 20).fill('#e8e8e8')
-       .fillColor('black')
-       .text('Budget Code', 55, table2Top + 5)
-       .text('Total (Original Currency) Spent', 200, table2Top + 5)
-       .text('Total (MYR) Spent', 400, table2Top + 5);
+    const col2Widths = [150, 180, 185];
+    currentX = 50;
 
-    // Add second table rows
-    doc.font('Helvetica')
-       .text('Text data', 55, table2Top + 30)
-       .text('4,298 USD', 200, table2Top + 30)
-       .text('9,916.00 USD', 400, table2Top + 30)
-       
-       .text('Text data', 55, table2Top + 50)
-       .text('6,391 USD', 200, table2Top + 50)
-       .text('2,329.00 USD', 400, table2Top + 50);
+    // Draw table header with borders
+    doc.rect(50, table2Top, 515, 20).stroke();
+    doc.rect(50, table2Top, 515, 20).fill('#e8e8e8');
+
+    // Add header texts and vertical lines
+    const headers2 = ['Budget Code', 'Total (Original Currency) Spent', 'Total (MYR) Spent'];
+    headers2.forEach((header, i) => {
+      doc.font('Helvetica-Bold')
+         .fillColor('black')
+         .text(header, currentX + 5, table2Top + 5, { width: col2Widths[i] });
+      
+      // Draw vertical lines
+      if (i < headers2.length) {
+        doc.moveTo(currentX, table2Top)
+           .lineTo(currentX, table2Top + 60)
+           .stroke();
+      }
+      currentX += col2Widths[i];
+    });
+    // Last vertical line
+    doc.moveTo(currentX, table2Top)
+       .lineTo(currentX, table2Top + 60)
+       .stroke();
+
+    // Draw horizontal line after header
+    doc.moveTo(50, table2Top + 20)
+       .lineTo(565, table2Top + 20)
+       .stroke();
+
+    // Add table data
+    budgetSpent.forEach((item, index) => {
+      const rowY = table2Top + 25 + (index * 20);
+      doc.font('Helvetica').fontSize(10);
+      doc.text(item.budgetCode, 55, rowY);
+      doc.text(item.originalAmount, 200, rowY);
+      doc.text(item.myrAmount, 400, rowY);
+    });
+
+    // Draw bottom border of second table
+    doc.moveTo(50, table2Top + 60)
+       .lineTo(565, table2Top + 60)
+       .stroke();
 
     // Finalize the PDF and end the stream
     doc.end();
