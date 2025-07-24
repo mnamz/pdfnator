@@ -52,9 +52,11 @@ app.post('/api/generate-pdf', (req, res) => {
     // Pipe the PDF document to the response
     doc.pipe(res);
 
+    // Calculate page dimensions
+    const pageWidth = doc.page.width - 100; // Full width minus margins
+
     // Add logo
     if (logoBase64) {
-      const pageWidth = doc.page.width - 100; // Full width minus margins
       const logoHeight = 80; // Increased height for better visibility
       const logoX = 50; // Start from left margin
       
