@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Generated Document</title>
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .title {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .date {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .content {
+            margin-top: 30px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .section-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #34495e;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            text-align: center;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Generated Document</div>
+            <div class="date">Generated on: {{generatedDate}}</div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <div class="section-title">Name</div>
+                <div class="section-content">{{name}}</div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Details</div>
+                <div class="section-content">{{details}}</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            This document was automatically generated
+        </div>
+    </div>
+</body>
+</html> 
