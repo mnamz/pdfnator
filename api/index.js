@@ -1,34 +1,10 @@
 const express = require('express');
-const handlebars = require('handlebars');
-const fs = require('fs');
-const path = require('path');
+const PDFDocument = require('pdfkit');
 
 const app = express();
 app.use(express.json());
 
-// Read the HTML template
-const templatePath = path.join(process.cwd(), 'templates', 'document.hbs');
-const template = fs.readFileSync(templatePath, 'utf8');
-
-// Compile the template
-const compiledTemplate = handlebars.compile(template);
-
-// Determine if we're in development or production
-const isDev = process.env.NODE_ENV !== 'production';
-
-// Import the appropriate version of Puppeteer
-let puppeteer;
-let chromium;
-if (isDev) {
-  puppeteer = require('puppeteer');
-} else {
-  puppeteer = require('puppeteer-core');
-  chromium = require('chrome-aws-lambda');
-}
-
-app.post('/api/generate-pdf', async (req, res) => {
-  let browser = null;
-  
+app.post('/api/generate-pdf', (req, res) => {
   try {
     const { name, details } = req.body;
 
@@ -36,74 +12,56 @@ app.post('/api/generate-pdf', async (req, res) => {
       return res.status(400).json({ error: 'Name and details are required' });
     }
 
-    // Prepare template data
-    const templateData = {
-      name,
-      details,
-      generatedDate: new Date().toLocaleDateString()
-    };
-
-    // Generate HTML from template
-    const html = compiledTemplate(templateData);
-
-    // Launch browser based on environment
-    if (isDev) {
-      browser = await puppeteer.launch({
-        headless: "new"
-      });
-    } else {
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath,
-        headless: true,
-      });
-    }
-
-    // Create new page
-    const page = await browser.newPage();
-    
-    // Set content
-    await page.setContent(html, {
-      waitUntil: 'networkidle0'
-    });
-
-    // Generate PDF
-    const pdf = await page.pdf({
-      format: 'A4',
-      margin: {
-        top: '20px',
-        right: '20px',
-        bottom: '20px',
-        left: '20px'
-      },
-      printBackground: true
+    // Create a new PDF document
+    const doc = new PDFDocument({
+      margin: 50,
+      size: 'A4'
     });
 
     // Set response headers
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
-    res.setHeader('Content-Length', pdf.length);
 
-    // Send the PDF
-    res.send(pdf);
+    // Pipe the PDF document to the response
+    doc.pipe(res);
+
+    // Add styled content to the PDF
+    doc.font('Helvetica-Bold')
+       .fontSize(25)
+       .text('Generated Document', { align: 'center' })
+       .moveDown();
+
+    // Add name section
+    doc.font('Helvetica-Bold')
+       .fontSize(14)
+       .text('Name:', { continued: true })
+       .font('Helvetica')
+       .text(` ${name}`)
+       .moveDown();
+
+    // Add details section
+    doc.font('Helvetica-Bold')
+       .fontSize(14)
+       .text('Details:', { continued: true })
+       .font('Helvetica')
+       .text(` ${details}`)
+       .moveDown();
+
+    // Add date
+    doc.font('Helvetica')
+       .fontSize(10)
+       .text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'left' });
+
+    // Finalize the PDF and end the stream
+    doc.end();
 
   } catch (error) {
-    console.error('Error in PDF generation:', error);
+    console.error('Error generating PDF:', error);
     res.status(500).json({ 
       error: 'Error generating PDF', 
       details: error.message 
     });
-  } finally {
-    if (browser !== null) {
-      await browser.close();
-    }
   }
-});
-
-// Add a test endpoint
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'API is working!' });
 });
 
 module.exports = app;

@@ -4,16 +4,10 @@
   "description": "PDF generation API with Vercel",
   "main": "index.js",
   "scripts": {
-    "start": "node api/index.js",
-    "dev": "NODE_ENV=development vercel dev"
+    "start": "node api/index.js"
   },
   "dependencies": {
-    "chrome-aws-lambda": "^10.1.0",
     "express": "^4.18.2",
-    "handlebars": "^4.7.8",
-    "puppeteer-core": "^10.1.0"
-  },
-  "devDependencies": {
-    "puppeteer": "^21.5.0"
+    "pdfkit": "^0.13.0"
   }
 }
