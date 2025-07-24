@@ -55,23 +55,25 @@ app.post('/api/generate-pdf', (req, res) => {
     // Add logo
     if (logoBase64) {
       const pageWidth = doc.page.width - 100; // Full width minus margins
-      const logoHeight = 100; // Increased height for better visibility
+      const logoHeight = 80; // Increased height for better visibility
       const logoX = 50; // Start from left margin
       
       doc.image(logoBase64, logoX, 50, {
         width: pageWidth,
         height: logoHeight
       });
-
-      // Add extra spacing after logo
-      doc.moveDown(5);
     }
 
-    // Add title with more spacing
+    // Calculate positions based on logo
+    const titleY = 180; // Position after logo
+
+    // Add title with spacing
     doc.fontSize(16)
        .font('Helvetica-Bold')
-       .text('WS: Electronic Procurement Requisition (EPR)', { align: 'center' })
-       .moveDown(2);
+       .text('WS: Electronic Procurement Requisition (EPR)', 50, titleY, { 
+         align: 'center',
+         width: pageWidth
+       });
 
     // Add header information (left side)
     doc.fontSize(10)
