@@ -154,22 +154,95 @@ app.post('/api/generate-pdf', (req, res) => {
 
     // Add table data
     currentX = 50;
-    items.forEach((item, index) => {
-      const rowY = tableTop + 25;
-      doc.font('Helvetica').fontSize(10);
-      doc.text(item.budgetCode, currentX + 5, rowY);
-      doc.text(item.description, currentX + colWidths[0] + 5, rowY);
-      doc.text(item.quantity.toString(), currentX + colWidths[0] + colWidths[1] + 5, rowY);
-      doc.text(item.unitPrice.toString(), currentX + colWidths[0] + colWidths[1] + colWidths[2] + 5, rowY);
-      doc.text(item.discount.toString(), currentX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 5, rowY);
-      doc.text(item.total + '\nMYR', currentX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + 5, rowY);
-      doc.text(item.totalMYR + '\nMYR', currentX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4] + colWidths[5] + 5, rowY);
-    });
+    let currentRowY = tableTop + 25;
+    const rowHeight = 60; // Height for each row to accommodate 3 lines of description
 
-    // Draw bottom border of first table
-    doc.moveTo(50, tableTop + 60)
-       .lineTo(565, tableTop + 60)
-       .stroke();
+    items.forEach((item, index) => {
+      // Draw row background and borders
+      doc.rect(50, currentRowY - 5, 515, rowHeight).stroke();
+      
+      doc.font('Helvetica').fontSize(10);
+      
+      // Add each column's data
+      let x = 50; // Start X position
+      
+      // Budget Code
+      doc.text(item.budgetCode, x + 5, currentRowY);
+      x += colWidths[0];
+      
+      // Description (with word wrapping)
+      doc.text(item.description, x + 5, currentRowY, {
+        width: colWidths[1] - 10,
+        align: 'left'
+      });
+      x += colWidths[1];
+      
+      // Quantity
+      doc.text(item.quantity.toString(), x + 5, currentRowY, {
+        width: colWidths[2] - 10,
+        align: 'left'
+      });
+      x += colWidths[2];
+      
+      // Unit Price
+      doc.text(item.unitPrice.toFixed(2), x + 5, currentRowY, {
+        width: colWidths[3] - 10,
+        align: 'left'
+      });
+      x += colWidths[3];
+      
+      // Discount
+      doc.text(item.discount.toFixed(2), x + 5, currentRowY, {
+        width: colWidths[4] - 10,
+        align: 'left'
+      });
+      x += colWidths[4];
+      
+      // Total
+      doc.text(item.total + '\nMYR', x + 5, currentRowY, {
+        width: colWidths[5] - 10,
+        align: 'left'
+      });
+      x += colWidths[5];
+      
+      // Total in MYR
+      doc.text(item.totalMYR + '\nMYR', x + 5, currentRowY, {
+        width: colWidths[6] - 10,
+        align: 'left'
+      });
+
+      // Draw vertical lines for this row
+      x = 50;
+      for (let i = 0; i <= colWidths.length; i++) {
+        doc.moveTo(x, currentRowY - 5)
+           .lineTo(x, currentRowY + rowHeight)
+           .stroke();
+        x += colWidths[i] || 0;
+      }
+
+      // Move to next row
+      currentRowY += rowHeight;
+
+      // Add a new page if we're near the bottom
+      if (currentRowY > doc.page.height - 100) {
+        doc.addPage();
+        currentRowY = 50; // Reset Y position on new page
+        
+        // Redraw header on new page
+        doc.rect(50, currentRowY, 515, 20).stroke();
+        doc.rect(50, currentRowY, 515, 20).fill('#e8e8e8');
+        
+        x = 50;
+        headers.forEach((header, i) => {
+          doc.font('Helvetica-Bold')
+             .fillColor('black')
+             .text(header, x + 5, currentRowY + 5, { width: colWidths[i] });
+          x += colWidths[i];
+        });
+        
+        currentRowY += 20; // Move past header
+      }
+    });
 
     // Draw second table
     const table2Top = 480; // Adjusted for logo space
