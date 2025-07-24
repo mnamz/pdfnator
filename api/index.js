@@ -14,7 +14,23 @@ const template = fs.readFileSync(templatePath, 'utf8');
 // Compile the template
 const compiledTemplate = handlebars.compile(template);
 
-app.post('/api/generate-pdf', (req, res) => {
+// PDF configuration
+const pdfOptions = {
+  format: 'A4',
+  orientation: 'portrait',
+  border: {
+    top: '20px',
+    right: '20px',
+    bottom: '20px',
+    left: '20px'
+  },
+  timeout: 30000,
+  renderDelay: 1000,
+  type: 'pdf',
+  quality: '100'
+};
+
+app.post('/api/generate-pdf', async (req, res) => {
   try {
     const { name, details } = req.body;
 
@@ -32,37 +48,36 @@ app.post('/api/generate-pdf', (req, res) => {
     // Generate HTML from template
     const html = compiledTemplate(templateData);
 
-    // PDF generation options
-    const options = {
-      format: 'A4',
-      orientation: 'portrait',
-      border: {
-        top: '20px',
-        right: '20px',
-        bottom: '20px',
-        left: '20px'
-      }
-    };
-
     // Generate PDF from HTML
-    pdf.create(html, options).toBuffer((err, buffer) => {
+    pdf.create(html, pdfOptions).toBuffer((err, buffer) => {
       if (err) {
         console.error('Error generating PDF:', err);
-        return res.status(500).json({ error: 'Error generating PDF' });
+        return res.status(500).json({ error: 'Error generating PDF', details: err.message });
       }
 
-      // Set response headers
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename=document.pdf');
-      
-      // Send the PDF buffer
-      res.send(buffer);
+      try {
+        // Set response headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
+        res.setHeader('Content-Length', buffer.length);
+        
+        // Send the PDF buffer
+        res.end(buffer);
+      } catch (sendError) {
+        console.error('Error sending PDF:', sendError);
+        res.status(500).json({ error: 'Error sending PDF', details: sendError.message });
+      }
     });
 
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    res.status(500).json({ error: 'Error generating PDF' });
+    console.error('Error in PDF generation route:', error);
+    res.status(500).json({ error: 'Error in PDF generation route', details: error.message });
   }
+});
+
+// Add a test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API is working!' });
 });
 
 module.exports = app;
