@@ -1,8 +1,9 @@
 const express = require('express');
-const pdf = require('html-pdf');
 const handlebars = require('handlebars');
 const fs = require('fs');
 const path = require('path');
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 
 const app = express();
 app.use(express.json());
@@ -14,23 +15,9 @@ const template = fs.readFileSync(templatePath, 'utf8');
 // Compile the template
 const compiledTemplate = handlebars.compile(template);
 
-// PDF configuration
-const pdfOptions = {
-  format: 'A4',
-  orientation: 'portrait',
-  border: {
-    top: '20px',
-    right: '20px',
-    bottom: '20px',
-    left: '20px'
-  },
-  timeout: 30000,
-  renderDelay: 1000,
-  type: 'pdf',
-  quality: '100'
-};
-
 app.post('/api/generate-pdf', async (req, res) => {
+  let browser = null;
+  
   try {
     const { name, details } = req.body;
 
@@ -48,30 +35,52 @@ app.post('/api/generate-pdf', async (req, res) => {
     // Generate HTML from template
     const html = compiledTemplate(templateData);
 
-    // Generate PDF from HTML
-    pdf.create(html, pdfOptions).toBuffer((err, buffer) => {
-      if (err) {
-        console.error('Error generating PDF:', err);
-        return res.status(500).json({ error: 'Error generating PDF', details: err.message });
-      }
-
-      try {
-        // Set response headers
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
-        res.setHeader('Content-Length', buffer.length);
-        
-        // Send the PDF buffer
-        res.end(buffer);
-      } catch (sendError) {
-        console.error('Error sending PDF:', sendError);
-        res.status(500).json({ error: 'Error sending PDF', details: sendError.message });
-      }
+    // Launch browser
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: true,
     });
 
+    // Create new page
+    const page = await browser.newPage();
+    
+    // Set content
+    await page.setContent(html, {
+      waitUntil: 'networkidle0'
+    });
+
+    // Generate PDF
+    const pdf = await page.pdf({
+      format: 'A4',
+      margin: {
+        top: '20px',
+        right: '20px',
+        bottom: '20px',
+        left: '20px'
+      },
+      printBackground: true
+    });
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
+    res.setHeader('Content-Length', pdf.length);
+
+    // Send the PDF
+    res.send(pdf);
+
   } catch (error) {
-    console.error('Error in PDF generation route:', error);
-    res.status(500).json({ error: 'Error in PDF generation route', details: error.message });
+    console.error('Error in PDF generation:', error);
+    res.status(500).json({ 
+      error: 'Error generating PDF', 
+      details: error.message 
+    });
+  } finally {
+    if (browser !== null) {
+      await browser.close();
+    }
   }
 });
 
