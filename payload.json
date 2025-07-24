@@ -1,0 +1,116 @@
+{
+  "poNo": "PO-2024-001",
+  "eprNo": "EPR-2024-001",
+  "requestedBy": "John Doe",
+  "date": "2024-01-13",
+  "budgetYear": "2024",
+  "to": [
+    "Department: IT Services",
+    "Division: Technology & Innovation",
+    "Level 3, Block A",
+    "The Alice Smith School",
+    "Jalan Bellamy",
+    "50460 Kuala Lumpur",
+    "Malaysia"
+  ],
+  "deliveryTo": [
+    "Attn: Library Resource Center",
+    "The Alice Smith School",
+    "Primary Campus",
+    "Jalan Bellamy",
+    "50460 Kuala Lumpur",
+    "Malaysia",
+    "Contact: +60 3-2148 3674"
+  ],
+  "items": [
+    {
+      "budgetCode": "IT-2024-001",
+      "description": "Dell Latitude 5430 Laptop\nIntel Core i7, 16GB RAM, 512GB SSD\nWindows 11 Pro",
+      "quantity": 5,
+      "unitPrice": 4500.00,
+      "discount": 500.00,
+      "total": "20,000.00",
+      "totalMYR": "20,000.00"
+    },
+    {
+      "budgetCode": "IT-2024-002",
+      "description": "Microsoft Office 365 Education\nAnnual Subscription\nFor Staff and Students",
+      "quantity": 100,
+      "unitPrice": 250.00,
+      "discount": 25.00,
+      "total": "22,500.00",
+      "totalMYR": "22,500.00"
+    },
+    {
+      "budgetCode": "IT-2024-003",
+      "description": "Interactive Whiteboard\nSmart Board 7000R Pro Series\n75-inch 4K UHD Display",
+      "quantity": 3,
+      "unitPrice": 15000.00,
+      "discount": 1500.00,
+      "total": "40,500.00",
+      "totalMYR": "40,500.00"
+    },
+    {
+      "budgetCode": "IT-2024-004",
+      "description": "iPad Air (5th Generation)\n256GB, Wi-Fi + Cellular\nWith Educational Discount",
+      "quantity": 20,
+      "unitPrice": 3200.00,
+      "discount": 200.00,
+      "total": "60,000.00",
+      "totalMYR": "60,000.00"
+    },
+    {
+      "budgetCode": "IT-2024-005",
+      "description": "Classroom Audio System\nIncluding Speakers, Microphones\nAnd Installation Service",
+      "quantity": 8,
+      "unitPrice": 5000.00,
+      "discount": 400.00,
+      "total": "36,800.00",
+      "totalMYR": "36,800.00"
+    },
+    {
+      "budgetCode": "IT-2024-006",
+      "description": "Network Switch Upgrade\nCisco Catalyst 9300\n24-port PoE+",
+      "quantity": 4,
+      "unitPrice": 12000.00,
+      "discount": 1000.00,
+      "total": "44,000.00",
+      "totalMYR": "44,000.00"
+    },
+    {
+      "budgetCode": "IT-2024-007",
+      "description": "Wireless Access Points\nAruba AP-535\nWi-Fi 6 Certified",
+      "quantity": 15,
+      "unitPrice": 2800.00,
+      "discount": 200.00,
+      "total": "39,000.00",
+      "totalMYR": "39,000.00"
+    },
+    {
+      "budgetCode": "IT-2024-008",
+      "description": "Server Upgrade\nDell PowerEdge R750\nDual Xeon Processors",
+      "quantity": 2,
+      "unitPrice": 35000.00,
+      "discount": 3000.00,
+      "total": "64,000.00",
+      "totalMYR": "64,000.00"
+    }
+  ],
+  "budgetSpent": [
+    {
+      "budgetCode": "IT-2024-Q1",
+      "originalAmount": "150,000 MYR",
+      "myrAmount": "150,000.00 MYR"
+    },
+    {
+      "budgetCode": "IT-2024-Q2",
+      "originalAmount": "176,800 MYR",
+      "myrAmount": "176,800.00 MYR"
+    },
+    {
+      "budgetCode": "IT-2024-CAPEX",
+      "originalAmount": "200,000 USD",
+      "myrAmount": "940,000.00 MYR"
+    }
+  ]
+} 
