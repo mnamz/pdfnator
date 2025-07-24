@@ -2,8 +2,6 @@ const express = require('express');
 const handlebars = require('handlebars');
 const fs = require('fs');
 const path = require('path');
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
 
 const app = express();
 app.use(express.json());
@@ -14,6 +12,19 @@ const template = fs.readFileSync(templatePath, 'utf8');
 
 // Compile the template
 const compiledTemplate = handlebars.compile(template);
+
+// Determine if we're in development or production
+const isDev = process.env.NODE_ENV !== 'production';
+
+// Import the appropriate version of Puppeteer
+let puppeteer;
+let chromium;
+if (isDev) {
+  puppeteer = require('puppeteer');
+} else {
+  puppeteer = require('puppeteer-core');
+  chromium = require('chrome-aws-lambda');
+}
 
 app.post('/api/generate-pdf', async (req, res) => {
   let browser = null;
@@ -35,13 +46,19 @@ app.post('/api/generate-pdf', async (req, res) => {
     // Generate HTML from template
     const html = compiledTemplate(templateData);
 
-    // Launch browser
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: true,
-    });
+    // Launch browser based on environment
+    if (isDev) {
+      browser = await puppeteer.launch({
+        headless: "new"
+      });
+    } else {
+      browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: true,
+      });
+    }
 
     // Create new page
     const page = await browser.newPage();
