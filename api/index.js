@@ -67,7 +67,7 @@ app.post('/api/generate-pdf', (req, res) => {
     }
 
     // Calculate positions based on logo
-    const titleY = 180; // Position after logo
+    const titleY = 150; // Position after logo - moved up closer to logo
 
     // Add title with spacing
     doc.fontSize(16)
