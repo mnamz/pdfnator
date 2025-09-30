@@ -19,7 +19,8 @@ app.post('/api/generate-pdf', (req, res) => {
       deliveryTo,
       items,
       budgetSpent,
-      logoBase64 = LOGO_BASE64 // Allow custom logo to be passed
+      logoBase64 = LOGO_BASE64, // Allow custom logo to be passed
+      filename = 'EPR.pdf' // Allow custom filename to be passed
     } = req.body;
 
     // Validate required fields
@@ -47,7 +48,7 @@ app.post('/api/generate-pdf', (req, res) => {
 
     // Set response headers
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="EPR.pdf"');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
     // Pipe the PDF document to the response
     doc.pipe(res);
