@@ -41,160 +41,20 @@ function getDeliveryAddress(campus, deliveryDepartment) {
   }
 }
 
-// Function to render text with hyperlink support for emails and URLs
-function renderTextWithLinks(doc, text, x, y, options = {}) {
-  // Validate inputs
-  if (!text || typeof text !== 'string') {
-    return doc.heightOfString('', { width: options.width || 200 });
-  }
-  if (typeof x !== 'number' || isNaN(x)) x = 0;
-  if (typeof y !== 'number' || isNaN(y)) y = 0;
+// Function to extract email address from description text
+function extractEmailFromDescription(text) {
+  if (!text) return '';
   
-  const width = options.width || 200;
-  const align = options.align || 'left';
+  // Email regex pattern to find email addresses
+  const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+  const match = emailRegex.exec(text);
   
-  // Email regex pattern - matches [email](mailto:email) format
-  const emailRegex = /\[([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\]\(mailto:[^)]+\)/g;
-  // URL regex pattern - matches [text](url) format
-  const urlRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  
-  let currentY = y;
-  const lineHeight = 12;
-  const words = text.split(/(\s+)/);
-  let currentLine = '';
-  let currentLineWidth = 0;
-  
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i];
-    if (word && typeof word === 'string') {
-      const wordWidth = doc.widthOfString(word);
-      
-      if (currentLineWidth + wordWidth > width && currentLine !== '') {
-        // Render current line with links
-        renderLineWithLinks(doc, currentLine, x, currentY, align, width);
-        currentLine = word;
-        currentLineWidth = wordWidth;
-        currentY += lineHeight;
-      } else {
-        currentLine += word;
-        currentLineWidth += wordWidth;
-      }
-    }
+  if (match && match[1]) {
+    return match[1]; // Return just the email address
   }
   
-  // Render last line
-  if (currentLine !== '') {
-    renderLineWithLinks(doc, currentLine, x, currentY, align, width);
-  }
-  
-  return currentY + lineHeight - y; // Return total height used
-}
-
-function renderLineWithLinks(doc, line, x, y, align, maxWidth) {
-  // Validate inputs
-  if (!line || typeof line !== 'string') return;
-  if (typeof x !== 'number' || isNaN(x)) x = 0;
-  if (typeof y !== 'number' || isNaN(y)) y = 0;
-  if (typeof maxWidth !== 'number' || isNaN(maxWidth)) maxWidth = 200;
-  
-  // Email regex pattern - matches [email](mailto:email) format
-  const emailRegex = /\[([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\]\(mailto:[^)]+\)/g;
-  // URL regex pattern - matches [text](url) format
-  const urlRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  
-  let lastIndex = 0;
-  let match;
-  
-  // Find all email addresses and URLs
-  const matches = [];
-  
-  // Reset regex lastIndex
-  emailRegex.lastIndex = 0;
-  urlRegex.lastIndex = 0;
-  
-  while ((match = emailRegex.exec(line)) !== null) {
-    if (match[1] && match[1].trim()) {
-      matches.push({
-        text: match[1].trim(), // Just the email address without brackets
-        start: match.index,
-        end: match.index + match[0].length,
-        type: 'email',
-        url: `mailto:${match[1].trim()}`
-      });
-    }
-  }
-  
-  while ((match = urlRegex.exec(line)) !== null) {
-    if (match[1] && match[2] && match[1].trim() && match[2].trim()) {
-      matches.push({
-        text: match[1].trim(), // Just the display text
-        start: match.index,
-        end: match.index + match[0].length,
-        type: 'url',
-        url: match[2].trim()
-      });
-    }
-  }
-  
-  // Sort matches by start position
-  matches.sort((a, b) => a.start - b.start);
-  
-  // Render text with links
-  let currentX = x;
-  
-  for (let i = 0; i <= matches.length; i++) {
-    const match = matches[i];
-    const prevMatch = matches[i - 1];
-    
-    let startIndex = i === 0 ? 0 : prevMatch.end;
-    let endIndex = match ? match.start : line.length;
-    
-    // Render text before the link
-    if (endIndex > startIndex) {
-      const textBefore = line.substring(startIndex, endIndex);
-      if (textBefore.trim()) {
-        const textWidth = doc.widthOfString(textBefore);
-        
-        if (align === 'center') {
-          currentX = x - textWidth / 2;
-        } else if (align === 'right') {
-          currentX = x - textWidth;
-        }
-        
-        doc.text(textBefore, currentX, y, { width: maxWidth - (currentX - x) });
-        currentX += textWidth;
-      }
-    }
-    
-    // Render link if it exists
-    if (match && match.text && match.url) {
-      const linkWidth = doc.widthOfString(match.text);
-      
-      if (align === 'center') {
-        currentX = x - linkWidth / 2;
-      } else if (align === 'right') {
-        currentX = x - linkWidth;
-      }
-      
-      // Validate link URL before adding
-      if (match.url && match.url.trim() && !isNaN(currentX) && !isNaN(y)) {
-        try {
-          doc.text(match.text, currentX, y, {
-            link: match.url,
-            underline: true,
-            color: 'blue',
-            width: maxWidth - (currentX - x)
-          });
-        } catch (error) {
-          // If link fails, render as regular text
-          doc.text(match.text, currentX, y, {
-            width: maxWidth - (currentX - x)
-          });
-        }
-        currentX += linkWidth;
-      }
-    }
-  }
+  // If no email found, return the original text
+  return text;
 }
 
 app.get('/api/generate-pdf/:id', async (req, res) => {
@@ -230,7 +90,7 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       deliveryTo: getDeliveryAddress(kissflowData.Requested_By_Campus, kissflowData.Delivery_Department),
       items: kissflowData['Table::Model_DSakzWikms'] && Array.isArray(kissflowData['Table::Model_DSakzWikms']) ? kissflowData['Table::Model_DSakzWikms'].map(item => ({
         budgetCode: item.RFQ_GL_Code || 'DEFAULT-001',
-        description: `${item.RFQ_Description || ''}\n${item.RFQ_Further_Description || ''}`.trim(),
+        description: extractEmailFromDescription(`${item.RFQ_Description || ''}\n${item.RFQ_Further_Description || ''}`.trim()),
         quantity: item.RFQ_Quantity || 1,
         unitPrice: parseFloat(item.RFQ_Unit_Price || 0).toFixed(2),
         discount: parseFloat(item.Discount_Amount_MYR_1 ? item.Discount_Amount_MYR_1.replace(' MYR', '') : 0).toFixed(2),
@@ -400,14 +260,14 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     let currentRowY = tableTop + 25;
 
     finalData.items.forEach((item, index) => {
-      // Pre-calculate description height for row height calculation
-      const estimatedDescriptionHeight = doc.heightOfString(item.description, {
-        width: colWidths[1] - 10,
+      // Calculate dynamic row height based on full description content
+      const descriptionHeight = doc.heightOfString(item.description, {
+        width: colWidths[1] - 10, // Match the rendering width
         align: 'left'
       });
       
       // Minimum row height of 20, or description height + 10 for padding
-      const rowHeight = Math.max(20, estimatedDescriptionHeight + 10);
+      const rowHeight = Math.max(20, descriptionHeight + 10);
       
       // Draw row background and borders
       doc.rect(50, currentRowY - 5, 515, rowHeight).stroke();
@@ -424,19 +284,11 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       });
       x += colWidths[0];
       
-      // Description (with hyperlink support and strict boundaries)
-      try {
-        const descriptionHeight = renderTextWithLinks(doc, item.description, x + 5, currentRowY, {
-          width: colWidths[1] - 10,
-          align: 'left'
-        });
-      } catch (error) {
-        // Fallback to regular text if hyperlink rendering fails
+      // Description (with strict boundaries to prevent overflow)
       doc.text(item.description, x + 5, currentRowY, {
-        width: colWidths[1] - 10,
+        width: colWidths[1] - 10, // Reduced margin for more text space
         align: 'left'
       });
-      }
       x += colWidths[1];
       
       // Quantity
