@@ -41,6 +41,132 @@ function getDeliveryAddress(campus, deliveryDepartment) {
   }
 }
 
+// Function to render text with hyperlink support for emails and URLs
+function renderTextWithLinks(doc, text, x, y, options = {}) {
+  const width = options.width || 200;
+  const align = options.align || 'left';
+  
+  // Email regex pattern - matches [email](mailto:email) format
+  const emailRegex = /\[([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\]\(mailto:[^)]+\)/g;
+  // URL regex pattern - matches [text](url) format
+  const urlRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  
+  let currentY = y;
+  const lineHeight = 12;
+  const words = text.split(/(\s+)/);
+  let currentLine = '';
+  let currentLineWidth = 0;
+  
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    const wordWidth = doc.widthOfString(word);
+    
+    if (currentLineWidth + wordWidth > width && currentLine !== '') {
+      // Render current line with links
+      renderLineWithLinks(doc, currentLine, x, currentY, align, width);
+      currentLine = word;
+      currentLineWidth = wordWidth;
+      currentY += lineHeight;
+    } else {
+      currentLine += word;
+      currentLineWidth += wordWidth;
+    }
+  }
+  
+  // Render last line
+  if (currentLine !== '') {
+    renderLineWithLinks(doc, currentLine, x, currentY, align, width);
+  }
+  
+  return currentY + lineHeight - y; // Return total height used
+}
+
+function renderLineWithLinks(doc, line, x, y, align, maxWidth) {
+  // Email regex pattern - matches [email](mailto:email) format
+  const emailRegex = /\[([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\]\(mailto:[^)]+\)/g;
+  // URL regex pattern - matches [text](url) format
+  const urlRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  
+  let lastIndex = 0;
+  let match;
+  
+  // Find all email addresses and URLs
+  const matches = [];
+  
+  // Reset regex lastIndex
+  emailRegex.lastIndex = 0;
+  urlRegex.lastIndex = 0;
+  
+  while ((match = emailRegex.exec(line)) !== null) {
+    matches.push({
+      text: match[1], // Just the email address without brackets
+      start: match.index,
+      end: match.index + match[0].length,
+      type: 'email',
+      url: `mailto:${match[1]}`
+    });
+  }
+  
+  while ((match = urlRegex.exec(line)) !== null) {
+    matches.push({
+      text: match[1], // Just the display text
+      start: match.index,
+      end: match.index + match[0].length,
+      type: 'url',
+      url: match[2]
+    });
+  }
+  
+  // Sort matches by start position
+  matches.sort((a, b) => a.start - b.start);
+  
+  // Render text with links
+  let currentX = x;
+  
+  for (let i = 0; i <= matches.length; i++) {
+    const match = matches[i];
+    const prevMatch = matches[i - 1];
+    
+    let startIndex = i === 0 ? 0 : prevMatch.end;
+    let endIndex = match ? match.start : line.length;
+    
+    // Render text before the link
+    if (endIndex > startIndex) {
+      const textBefore = line.substring(startIndex, endIndex);
+      const textWidth = doc.widthOfString(textBefore);
+      
+      if (align === 'center') {
+        currentX = x - textWidth / 2;
+      } else if (align === 'right') {
+        currentX = x - textWidth;
+      }
+      
+      doc.text(textBefore, currentX, y, { width: maxWidth - (currentX - x) });
+      currentX += textWidth;
+    }
+    
+    // Render link if it exists
+    if (match) {
+      const linkWidth = doc.widthOfString(match.text);
+      
+      if (align === 'center') {
+        currentX = x - linkWidth / 2;
+      } else if (align === 'right') {
+        currentX = x - linkWidth;
+      }
+      
+      // Add link
+      doc.text(match.text, currentX, y, {
+        link: match.url,
+        underline: true,
+        color: 'blue',
+        width: maxWidth - (currentX - x)
+      });
+      currentX += linkWidth;
+    }
+  }
+}
+
 app.get('/api/generate-pdf/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -244,14 +370,14 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     let currentRowY = tableTop + 25;
 
     finalData.items.forEach((item, index) => {
-      // Calculate dynamic row height based on full description content
-      const descriptionHeight = doc.heightOfString(item.description, {
-        width: colWidths[1] - 10, // Match the rendering width
+      // Pre-calculate description height for row height calculation
+      const estimatedDescriptionHeight = doc.heightOfString(item.description, {
+        width: colWidths[1] - 10,
         align: 'left'
       });
       
       // Minimum row height of 20, or description height + 10 for padding
-      const rowHeight = Math.max(20, descriptionHeight + 10);
+      const rowHeight = Math.max(20, estimatedDescriptionHeight + 10);
       
       // Draw row background and borders
       doc.rect(50, currentRowY - 5, 515, rowHeight).stroke();
@@ -268,9 +394,9 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       });
       x += colWidths[0];
       
-      // Description (with strict boundaries to prevent overflow)
-      doc.text(item.description, x + 5, currentRowY, {
-        width: colWidths[1] - 10, // Reduced margin for more text space
+      // Description (with hyperlink support and strict boundaries)
+      const descriptionHeight = renderTextWithLinks(doc, item.description, x + 5, currentRowY, {
+        width: colWidths[1] - 10,
         align: 'left'
       });
       x += colWidths[1];
