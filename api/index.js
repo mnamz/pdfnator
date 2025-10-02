@@ -179,12 +179,12 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
        .font('Helvetica-Bold')
        .text('To:', 50, 250)
        .font('Helvetica')
-       .text(finalData.to.join('\n'), 150, 250)
+       .text(finalData.to.join('\n'), 50, 270)
        
        .font('Helvetica-Bold')
        .text('Delivery To:', 300, 250)
        .font('Helvetica')
-       .text(finalData.deliveryTo.join('\n'), 400, 250);
+       .text(finalData.deliveryTo.join('\n'), 300, 270);
 
     // Draw first table
     const tableTop = 370; // Adjusted for logo space
