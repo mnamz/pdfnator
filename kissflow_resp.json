@@ -1,0 +1,385 @@
+{
+    "_id": "PkC87J3jh2WN",
+    "Name": "Electronic Procurement Requisition: EPR_2025-26_0181",
+    "_created_by": {
+        "_id": "UshlbmGflNsK",
+        "Name": "Catherine THURUPPIAH",
+        "Kind": "User"
+    },
+    "_modified_by": {
+        "_id": "UshlbmGflNsK",
+        "Name": "Catherine THURUPPIAH",
+        "Kind": "User"
+    },
+    "_created_at": "2025-09-24T00:05:14Z",
+    "_modified_at": "2025-09-30T23:54:13Z",
+    "_flow_name": "WS: Electronic Procurement Requisition (EPR)",
+    "_flow_type": "Process",
+    "_doc_version": "190253266424249632",
+    "_completed_at": "2025-09-30T23:54:13Z",
+    "_status": "Completed",
+    "_stage": 2,
+    "_root_process_instance": "PkC87J3s1ESJ",
+    "_submitted_at": "2025-09-24T00:09:52Z",
+    "_request_number": 8636,
+    "_counter": 11401,
+    "_last_completed_step": "PkCAJttB_gW3",
+    "_progress": 100.0,
+    "Load_Employee_Details": {
+        "Name": "E0695",
+        "Employee_Name": "CATHERINE A/P M  THURUPPIAH",
+        "Department": "FACILITIES",
+        "Designation": "ADMINISTRATIVE CLERK",
+        "Campus": "Primary",
+        "EmpNumber": "0695",
+        "Type": "NTS",
+        "Email_Address": "catherine.jb@alice-smith.edu.my",
+        "_id": "PkDurwYudfS6"
+    },
+    "Initiator_Email_Load": "catherine.jb@alice-smith.edu.my",
+    "Requested_By_Full_Name": "CATHERINE A/P M  THURUPPIAH",
+    "Requested_By_Employee_Number": "0695",
+    "Requested_By_Employee_Key": "E0695",
+    "Requested_By_Campus": "Primary",
+    "Requested_By_Department": "FACILITIES",
+    "Requested_By_Type": "NTS",
+    "Requested_By_Email": "catherine.jb@alice-smith.edu.my",
+    "Request_Date": "2025-09-24T00:05:14Z",
+    "ePR_Form_Number": "EPR_2025-26_0181",
+    "Budget_Year": "2025-26",
+    "Purchase_Requisition_Type": "Request for Quotation (RFQ)",
+    "Delivery_Location": "Primary",
+    "Delivery_Department": "Facilities & Maintenance",
+    "GL_Code_1": {
+        "Name": "JB-0201-26",
+        "Description": "JB Repair & Maintenance 25-26",
+        "_id": "JB-0201-26"
+    },
+    "Number_Of_Budget_Codes": "1",
+    "GL_Code_1_Budget_Approver_1_Lookup_User": {
+        "_id": "Us6AZ7hag9uv",
+        "Name": "Nazri Muhammad",
+        "Kind": "User"
+    },
+    "GL_Code_1_Budget_Approver_1_Name": "Nazri Muhammad",
+    "GL_Code_1_Budget_Approver_1_Email": "nazrim.jb@alice-smith.edu.my",
+    "Estimated_Delivery_Date": "6/10/2025 to 13/10/2025",
+    "Delivery_Priority": "High (within 7 days)",
+    "Vendor_Type": "Approved Vendor",
+    "Supplier_Company_Code": "EL006",
+    "Supplier_Company_Name": "ELITRANS VENTURES SDN BHD",
+    "Supplier_Contact_Person_Name": "Mr Yong",
+    "Supplier_Mailing_Address": "P-G-19, KOMPLEKS PRIMA (TROPIC),",
+    "Supplier_Telephone_Number": "603-2106 8901",
+    "Supplier_Contact_Phone_Number": "603-2106 8901",
+    "Supplier_Contact_Person_Email": "elitransycc@gmail.com",
+    "Supplier_Currency": "MYR",
+    "GL_Code_1_ID": "JB-0201-26",
+    "ePR_Current_Status": "Completed",
+    "GL_Code_1_Current_Balance": "1150702.11 MYR",
+    "RFQ_GL_Code_1_Total_Sum": 550.0,
+    "GL_Code_1_Total_Amount_MYR": "550.0 MYR",
+    "GL_Code_2_Total_Amount_MYR": "0.0 MYR",
+    "GL_Code_1_New_Balance_If_Approved": "1150152.11 MYR",
+    "GL_Code_2_New_Balance_If_Approved": "0.0 MYR",
+    "Requester_Comments": "Plumbing Works Above Yr 6 Water Tank Area",
+    "Add_Additional_Approver": "No",
+    "Enable_GL_Code_1_Budget_Approver_1": "Enable",
+    "Enable_GL_Code_1_Budget_Approver_2": "Disable",
+    "Enable_GL_Code_1_Budget_Approver_3": "Disable",
+    "Enable_GL_Code_2_Budget_Approver_1": "Disable",
+    "Enable_GL_Code_2_Budget_Approver_2": "Disable",
+    "Enable_GL_Code_2_Budget_Approver_3": "Disable",
+    "Request_Attachments": [
+        {
+            "uploaded": 100,
+            "name": "Plumbing Works At Yr 6 Water Tank 230925.pdf",
+            "id": "Attach_7YaW6I6eJ1",
+            "key": "Electronic_Payment_Requisition_EPR_/PkC87J3jh2WN/PkC87J3s5QdN/Attach_7YaW6I6eJ1/Plumbing_Works_At_Yr_6_Water_Tank_230925.pdf",
+            "size": 285356,
+            "fileExtension": "pdf",
+            "_modified_at": "2025-09-24T00:09:37.603Z",
+            "_created_at": "2025-09-24T00:09:37.603Z"
+        }
+    ],
+    "Currency_Final_Code": "MYR",
+    "Currency_Final_Lookup": {
+        "KLASS_Forex_Rate": 1,
+        "_id": "Currency_8CfzpnIkg5",
+        "Name": "MALAYSIA"
+    },
+    "Currency_Final_Exchange_Rate": 1,
+    "Generate_Email_Purchase_Order": "Yes",
+    "Estimated_Minimum_Delivery_Days": 7,
+    "Delivery_Type": "Local Delivery",
+    "Enable_Vendor_Scorecard": "No",
+    "Enable_Goods_Received_Note_GRN": "Yes",
+    "Estimated_Maximum_Delivery_Days": 14,
+    "Minimum_Date_Integration_Enter": "2025-09-29",
+    "Maximum_Date_Integration_Enter": "2025-09-29",
+    "Minimum_Date_Calculation": "2025-10-06",
+    "Maximum_Date_Calculation": "2025-10-13",
+    "Today_Field": "2025-09-30",
+    "Enable_Quotation_Portion": "Enable",
+    "Requester_Expected_Date_Enter": "2025-09-29",
+    "Requester_Expected_Date_Int": 7.0,
+    "Requester_Expected_Date_Calculation": "2025-10-06",
+    "Total_Physical_Items_Ordered": 0.0,
+    "GRN_SRN_Total_Items": 1,
+    "GRN_SRN_Service_Total_Items": 1,
+    "Total_Physical_Items_Received": 0.0,
+    "Physical_Delivery_Int": 0.0,
+    "Total_Physical_Item_Delivery_Accuracy": "0.0%",
+    "Physical_Delivery_Int_to_": 0.0,
+    "Total_Service_Items_Ordered": 1,
+    "GRN_SRN_Service_Qty_Received": 1,
+    "Service_Delivery_Int": 1.0,
+    "Service_Delivery_Int_": 100.0,
+    "Service_Items_Received": 1,
+    "Service_Item_Delivery_Accuracy": "100.0%",
+    "GRN_SRN_Qty_Received": 1.0,
+    "Total_Delivery_Int": 1.0,
+    "Overall_Items_Ordered": 1.0,
+    "Total_Items_Received": 1.0,
+    "Total_Item_Delivery_Accuracy": "100.0%",
+    "Total_Delivery_Int_": 100.0,
+    "Date_Of_Delivery": "2025-09-30",
+    "Procurement_Estimated_vs_Actual_Delivery": "Early",
+    "Requester_Request_vs_Actual_Delivery": "On-Time",
+    "Procurement_Staff_Handling_this_ePR": {
+        "_id": "Us7DCcSYpuoc",
+        "Name": "Ee Ching ONG",
+        "Kind": "User"
+    },
+    "Procurement_Staff_Emp_DB_Lookup": {
+        "Name": "E1812",
+        "Line_Manager": {
+            "_id": "UsU5fp7bWS6h",
+            "Name": "Christine CHIEW",
+            "Kind": "User"
+        },
+        "_id": "Employee_Master_01_sJjyZOBWs"
+    },
+    "Procurement_Staff_Email": "econg.jb@alice-smith.edu.my",
+    "PO_School_Address_Line_1": "2 Jalan Bellamy",
+    "PO_School_Address_Line_2": "50460 Kuala Lumpur",
+    "PO_School_Address_Line_3": "Malaysia",
+    "PO_School_Phone_Number": "603-2148 3674",
+    "PO_Delivery_Expected_Date": "2025-10-14",
+    "PO_Vendor_Address_Line_1": "P-G-19, Kompleks Prima (Tropic),",
+    "PO_Vendor_Address_Line_2": "Jalan PJU 8/1, Bandar Damansara Perdanan",
+    "Purchase_Order_Days_Before_Delivery_Due": 14,
+    "Purchase_Order_Validity_Days": "3 months",
+    "PO_Number": "18007242",
+    "PO_Validity_Text": "Unless stated otherwise, the validity of this purchase order is within 3 months from the date of issuance.",
+    "Total_Table_INT": 550.0,
+    "Total_Table_Rows": 1,
+    "Purchase_Order_Attachments": [
+        {
+            "key": "Electronic_Payment_Requisition_EPR_/PkC87J3jh2WN/Official_Purchase_Order/Attach-CAJtuj3UeM/2025-26_PO18007242_EPR_2025-26_0181.pdf",
+            "id": "Attach-CAJtuj3UeM",
+            "name": "2025-26_PO18007242_EPR_2025-26_0181.pdf",
+            "fileExtension": "pdf",
+            "size": 344250
+        }
+    ],
+    "PO_Email_CC_List": "econg.jb@alice-smith.edu.my,yan@alice-smith.edu.my,",
+    "GRNSRN_Visible": "Yes",
+    "Scorecard_Visible": "No",
+    "Purchase_Requisition_For_Campus": "Primary",
+    "Category_of_Purchase": "Buildings & Facilities",
+    "Use_Default_Procurement_Assignment": "Yes",
+    "Requester_Email_Receiver": "klass_kissflow@alice-smith.edu.my,catherine.jb@alice-smith.edu.my,nazrim.jb@alice-smith.edu.my",
+    "Head_of_Procurement_Email": "yan@alice-smith.edu.my",
+    "Contract_Status": "Non-Contract",
+    "Process_as_EPR_or_PR": "Electronic Procurement Requisition (EPR)",
+    "PR_Transfer_Dropdown_Menu_No": "No",
+    "PR_Transfer_Payment_Currency": "MYR",
+    "PR_Transfer_NA": "NA",
+    "PR_Transfer_Number_of_Budget_Codes": "1",
+    "Lookup_Fiscal_Year": {
+        "Year_Data": "2025-26",
+        "Year_Description": "Current Fiscal Year",
+        "_id": "Academic_Budget_For_Years_mM5Ci5rqh",
+        "Name": "Electronic_Payment_Requisition_EPR_Current"
+    },
+    "Academic_Year_TXT": "2025-26",
+    "Form_Status": "Completed",
+    "Budget_Subcode_1": {
+        "SubCode": "82000",
+        "Description": "R & M - Buildings",
+        "Name": "JB-0201-26-82000",
+        "_id": "JB-0201-26-82000"
+    },
+    "EPR_Form_Number_TXT": "EPR_2025-26_0181",
+    "Search_Approved_Vendor_TXT": "ELITRANS VENTURES SDN BHD",
+    "Lookup_Approved_Suppliers": {
+        "Name": "993",
+        "Supplier_Name": "ELITRANS VENTURES SDN BHD",
+        "Email_1": "elitransycc@gmail.com",
+        "Contact": "Mr Yong",
+        "CurrencyCode": "MYR",
+        "Code": "EL006",
+        "_id": "993"
+    },
+    "PO_City": "",
+    "PO_Post_Code": "47820",
+    "PO_State": "Selangor",
+    "Original_Currency_PO_Table_Total": 550.0,
+    "PO_Drive_PDF_ID": "1ePn6yWI3F9uDUADcMn4g1E61WeY4vndX",
+    "BI_Code_1_Budget_Code_1_Pending_EPR_Amount": "28279.16 MYR",
+    "Budget_Code_1_Pending_EPR_Total": "28279.16 MYR",
+    "Budget_Code_1_Posted_Balance": "126018.73 MYR",
+    "RFQ_GL_Code_1_Total_Original_Currency": "550.0 MYR",
+    "RFQ_GL_Code_1_Total_Original_Int": 550.0,
+    "Remove_from_Pending_Calculation": "Yes",
+    "NEW_Budget_Code_1_Purchase_Total_Amount": "550.0 MYR",
+    "NEW_Budget_Code_2_Purchase_Total_Amount": "0.0 MYR",
+    "NEW_Budget_Code_1_Original_Currency_Total": "550.0 MYR",
+    "NEW_Request_Date": "24/09/2025 08:05",
+    "Request_Date_8_Hours": "2025-09-24T08:05:14Z",
+    "Budget_Code_1_Check_Remaining_Amount": "1150152.11 MYR",
+    "Budget_Code_1_Allow_Deficit": "No",
+    "Budget_Code_2_Allow_Deficit": "No",
+    "Budget_1_Deficit": "Valid",
+    "Payment_Advance": "No",
+    "PR_Pay_To_Name": "ELITRANS VENTURES SDN BHD",
+    "PR_Pay_To_Email": "elitransycc@gmail.com",
+    "PR_Payment_Transaction_Performed_By": " ",
+    "Line_Manager_of_Staff_Handling_this_ePR": {
+        "Name": "E1812",
+        "Email_Address": "econg.jb@alice-smith.edu.my",
+        "User_Account": {
+            "_id": "Us7DCcSYpuoc",
+            "Name": "Ee Ching ONG",
+            "Kind": "User"
+        },
+        "Line_Manager": {
+            "_id": "UsU5fp7bWS6h",
+            "Name": "Christine CHIEW",
+            "Kind": "User"
+        },
+        "Line_Manager_TXT": "CHIEW LI CHIN",
+        "_id": "Employee_Master_01_sJjyZOBWs"
+    },
+    "Procurement_Manager": {
+        "_id": "UsU5fp7bWS6h",
+        "Name": "Christine CHIEW",
+        "Kind": "User"
+    },
+    "CFO": {
+        "_id": "Us1GfphEeRC8",
+        "Name": "Kok Liang LEONG",
+        "Kind": "User"
+    },
+    "K_Approval": "Disable",
+    "Force_Allow_Deficit": false,
+    "Table::Model_DSakzWikms": [
+        {
+            "_id": "Model_DSakzWikms_6GzYFdQ-KY",
+            "_created_by": {
+                "_id": "UshlbmGflNsK",
+                "Name": "Catherine THURUPPIAH",
+                "Kind": "User"
+            },
+            "_modified_by": {
+                "_id": "Us7DCcSYpuoc",
+                "Name": "Ee Ching ONG",
+                "Kind": "User"
+            },
+            "_created_at": "2025-09-24T00:05:54Z",
+            "_modified_at": "2025-09-26T02:02:35Z",
+            "RFQ_Description": "Year 6__Plumbing Works Above Yr 6 Water Tank Area",
+            "RFQ_Further_Description": "To connect the existing 1\" Poly pipe and 1\" PE pipe including all necessary welding and fixing accessories\n\nRef: EV/ASS JB/2025/1735 dd 23.09.2025",
+            "RFQ_Currency_Code": "MYR",
+            "RFQ_Select_UOM": "Unit",
+            "RFQ_Quantity": 1,
+            "RFQ_Unit_Price": 550,
+            "RFQ_Enter_Fixed_Discount_Amount": 0.0,
+            "RFQ_Enter_Percentage_Discount_Amount": 0.0,
+            "RFQ_TOTAL_MYR": "550.0 MYR",
+            "RFQ_Total_INT": 550.0,
+            "Hidden_Parent_GL_Code_1_Key": "JB-0201-26",
+            "RFQ_GL_Code": "JB-0201-26",
+            "Hidden_Parent_Number_of_Budget_Codes": 1.0,
+            "RFQ_Discount_Amount_INT": 0.0,
+            "Discount_Amount_MYR_1": "0.0 MYR",
+            "Hidden_RFQ_Currency_FX_Rate": 1,
+            "Hidden_Budget_Subcode_Key": "JB-0201-26-82000",
+            "Hidden_Budget_Subcode": {
+                "Name": "JB-0201-26-82000",
+                "SubCode": "82000",
+                "_id": "JB-0201-26-82000"
+            },
+            "Hidden_Unit_Price": 550,
+            "Enter_Discount_Amount": "0",
+            "Hidden_KLASS_Store_Item_Number": 0.0,
+            "Hidden_Original_Currency_Total": 550,
+            "Hidden_Original_Discount_Total": 0.0,
+            "Hidden_Table_EPR_Number": "EPR_2025-26_0181",
+            "Hidden_Line_Item_Unique_Number": "9169",
+            "Original_Currency_Total": "550.0 MYR"
+        }
+    ],
+    "Table::Model__pAr1oWlLE": [
+        {
+            "_id": "Model_DSakzWikms_6GzYFdQ-KY",
+            "_created_by": {
+                "_id": "UsyFNAd9PDhfN",
+                "Name": "Klass KISSFLOW",
+                "Kind": "User"
+            },
+            "_modified_by": {
+                "_id": "UshlbmGflNsK",
+                "Name": "Catherine THURUPPIAH",
+                "Kind": "User"
+            },
+            "_created_at": "2025-09-30T00:42:49Z",
+            "_modified_at": "2025-09-30T23:53:23Z",
+            "GRN_SRN_Description": "Year 6__Plumbing Works Above Yr 6 Water Tank Area",
+            "GRN_SRN_Quantity": 1,
+            "GRN_SRN_Quantity_Received": 1,
+            "Item_or_Service": "Service"
+        }
+    ],
+    "Table::Untitled_Table": [
+        {
+            "_id": "Model_DSakzWikms_6GzYFdQ-KY",
+            "_created_by": {
+                "_id": "UsyFNAd9PDhfN",
+                "Name": "Klass KISSFLOW",
+                "Kind": "User"
+            },
+            "_modified_by": {
+                "_id": "UsyFNAd9PDhfN",
+                "Name": "Klass KISSFLOW",
+                "Kind": "User"
+            },
+            "_created_at": "2025-09-29T23:35:49Z",
+            "_modified_at": "2025-09-29T23:35:49Z",
+            "PO_QTY": 1,
+            "PO_Unit_Price": 550,
+            "PO_Description": "Year 6__Plumbing Works Above Yr 6 Water Tank Area",
+            "Discount": 0,
+            "Total": 550.0,
+            "Additional_Information": "To connect the existing 1\" Poly pipe and 1\" PE pipe including all necessary welding and fixing accessories\n\nRef: EV/ASS JB/2025/1735 dd 23.09.2025"
+        }
+    ],
+    "_current_context": [
+        {
+            "_context_action_info": [
+                {
+                    "actor": {
+                        "_id": "UshlbmGflNsK",
+                        "Name": "Catherine THURUPPIAH",
+                        "Kind": "User"
+                    },
+                    "acted_at": "2025-09-30T23:54:13Z",
+                    "_status": "Completed"
+                }
+            ],
+            "_status": "Completed"
+        }
+    ],
+    "_meta_version": "1751268707416714"
+}
