@@ -193,8 +193,8 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     const availableWidth = 515; // Total table width
     const headers = ['Budget Code', 'Description', 'Quantity', 'Unit Price', 'Discount', 'Total', 'Total in MYR'];
     
-    // Base widths for each column (minimum widths)
-    const baseWidths = [80, 280, 60, 80, 80, 80, 80];
+    // Base widths for each column (optimized for A4 page width)
+    const baseWidths = [70, 320, 50, 70, 70, 70, 70];
     
     // Calculate total base width
     const totalBaseWidth = baseWidths.reduce((sum, width) => sum + width, 0);
@@ -244,27 +244,9 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     let currentRowY = tableTop + 25;
 
     finalData.items.forEach((item, index) => {
-      // Pre-calculate truncated description for consistent height calculation
-      const maxDescriptionWidth = colWidths[1] - 20;
-      let descriptionText = item.description;
-      
-      if (doc.widthOfString(descriptionText) > maxDescriptionWidth) {
-        const words = descriptionText.split(' ');
-        let truncated = '';
-        for (let word of words) {
-          const testText = truncated + (truncated ? ' ' : '') + word;
-          if (doc.widthOfString(testText + '...') <= maxDescriptionWidth) {
-            truncated = testText;
-          } else {
-            break;
-          }
-        }
-        descriptionText = truncated + '...';
-      }
-      
-      // Calculate dynamic row height based on truncated content
-      const descriptionHeight = doc.heightOfString(descriptionText, {
-        width: maxDescriptionWidth,
+      // Calculate dynamic row height based on full description content
+      const descriptionHeight = doc.heightOfString(item.description, {
+        width: colWidths[1] - 10,
         align: 'left'
       });
       
@@ -286,9 +268,9 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       });
       x += colWidths[0];
       
-      // Description (use pre-calculated truncated text)
-      doc.text(descriptionText, x + 5, currentRowY, {
-        width: maxDescriptionWidth,
+      // Description (with full text and word wrapping)
+      doc.text(item.description, x + 5, currentRowY, {
+        width: colWidths[1] - 10,
         align: 'left'
       });
       x += colWidths[1];
