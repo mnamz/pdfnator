@@ -41,20 +41,13 @@ function getDeliveryAddress(campus, deliveryDepartment) {
   }
 }
 
-// Function to extract email address from description text
+// Function to clean up mailto formatting in description text
 function extractEmailFromDescription(text) {
   if (!text) return '';
   
-  // Email regex pattern to find email addresses
-  const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
-  const match = emailRegex.exec(text);
-  
-  if (match && match[1]) {
-    return match[1]; // Return just the email address
-  }
-  
-  // If no email found, return the original text
-  return text;
+  // Remove (mailto:email) parts but keep the email address
+  // Pattern matches: [email](mailto:email) and replaces with just the email
+  return text.replace(/\[([^\]]+)\]\(mailto:[^)]+\)/g, '$1');
 }
 
 app.get('/api/generate-pdf/:id', async (req, res) => {
