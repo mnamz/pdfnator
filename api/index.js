@@ -194,7 +194,7 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     const headers = ['Budget Code', 'Description', 'Quantity', 'Unit Price', 'Discount', 'Total', 'Total in MYR'];
     
     // Base widths for each column (optimized for A4 page width)
-    const baseWidths = [70, 320, 50, 70, 70, 70, 70];
+    const baseWidths = [80, 240, 60, 80, 80, 80, 80];
     
     // Calculate total base width
     const totalBaseWidth = baseWidths.reduce((sum, width) => sum + width, 0);
@@ -246,7 +246,7 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     finalData.items.forEach((item, index) => {
       // Calculate dynamic row height based on full description content
       const descriptionHeight = doc.heightOfString(item.description, {
-        width: colWidths[1] - 10,
+        width: colWidths[1] - 15, // Match the rendering width
         align: 'left'
       });
       
@@ -268,9 +268,9 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       });
       x += colWidths[0];
       
-      // Description (with full text and word wrapping)
+      // Description (with strict boundaries to prevent overflow)
       doc.text(item.description, x + 5, currentRowY, {
-        width: colWidths[1] - 10,
+        width: colWidths[1] - 15, // Extra margin to ensure no overflow
         align: 'left'
       });
       x += colWidths[1];
