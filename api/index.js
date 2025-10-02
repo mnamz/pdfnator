@@ -188,7 +188,27 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
 
     // Draw first table
     const tableTop = 370; // Adjusted for logo space
-    const colWidths = [75, 100, 60, 70, 70, 70, 70];
+    
+    // Calculate dynamic column widths based on content
+    const availableWidth = 515; // Total table width
+    const headers = ['Budget Code', 'Description', 'Quantity', 'Unit Price', 'Discount', 'Total', 'Total in MYR'];
+    
+    // Base widths for each column (minimum widths)
+    const baseWidths = [80, 200, 60, 80, 80, 80, 80];
+    
+    // Calculate total base width
+    const totalBaseWidth = baseWidths.reduce((sum, width) => sum + width, 0);
+    
+    // If total base width is less than available width, expand description column
+    let colWidths;
+    if (totalBaseWidth < availableWidth) {
+      const extraWidth = availableWidth - totalBaseWidth;
+      colWidths = [...baseWidths];
+      colWidths[1] += extraWidth; // Add extra width to description column
+    } else {
+      colWidths = baseWidths;
+    }
+    
     let currentX = 50;
 
     // Draw table header with borders
@@ -196,7 +216,6 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     doc.rect(50, tableTop, 515, 20).fill('#e8e8e8');
     
     // Add header texts and vertical lines
-    const headers = ['Budget Code', 'Description', 'Quantity', 'Unit Price', 'Discount', 'Total', 'Total in MYR'];
     headers.forEach((header, i) => {
       doc.font('Helvetica-Bold')
          .fillColor('black')
@@ -223,9 +242,17 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     // Add table data
     currentX = 50;
     let currentRowY = tableTop + 25;
-    const rowHeight = 60; // Height for each row to accommodate 3 lines of description
 
     finalData.items.forEach((item, index) => {
+      // Calculate dynamic row height based on content
+      const descriptionHeight = doc.heightOfString(item.description, {
+        width: colWidths[1] - 10,
+        align: 'left'
+      });
+      
+      // Minimum row height of 20, or description height + 10 for padding
+      const rowHeight = Math.max(20, descriptionHeight + 10);
+      
       // Draw row background and borders
       doc.rect(50, currentRowY - 5, 515, rowHeight).stroke();
       
@@ -312,8 +339,8 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       }
     });
 
-    // Draw second table
-    const table2Top = 480; // Adjusted for logo space
+    // Draw second table - position it after the first table
+    const table2Top = currentRowY + 20; // Position after the first table
     const col2Widths = [150, 180, 185];
     currentX = 50;
 
@@ -350,9 +377,15 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     finalData.budgetSpent.forEach((item, index) => {
       const rowY = table2Top + 25 + (index * 20);
       doc.font('Helvetica').fontSize(10);
-      doc.text(item.budgetCode, 55, rowY);
-      doc.text(item.originalAmount, 200, rowY);
-      doc.text(item.myrAmount, 400, rowY);
+      
+      let x = 50;
+      doc.text(item.budgetCode, x + 5, rowY, { width: col2Widths[0] - 10 });
+      x += col2Widths[0];
+      
+      doc.text(item.originalAmount, x + 5, rowY, { width: col2Widths[1] - 10 });
+      x += col2Widths[1];
+      
+      doc.text(item.myrAmount, x + 5, rowY, { width: col2Widths[2] - 10 });
     });
 
     // Draw bottom border of second table
