@@ -194,7 +194,7 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     const headers = ['Budget Code', 'Description', 'Quantity', 'Unit Price', 'Discount', 'Total', 'Total in MYR'];
     
     // Base widths for each column (minimum widths)
-    const baseWidths = [90, 250, 70, 90, 90, 90, 90];
+    const baseWidths = [80, 280, 60, 80, 80, 80, 80];
     
     // Calculate total base width
     const totalBaseWidth = baseWidths.reduce((sum, width) => sum + width, 0);
@@ -244,9 +244,27 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     let currentRowY = tableTop + 25;
 
     finalData.items.forEach((item, index) => {
-      // Calculate dynamic row height based on content
-      const descriptionHeight = doc.heightOfString(item.description, {
-        width: colWidths[1] - 10,
+      // Pre-calculate truncated description for consistent height calculation
+      const maxDescriptionWidth = colWidths[1] - 20;
+      let descriptionText = item.description;
+      
+      if (doc.widthOfString(descriptionText) > maxDescriptionWidth) {
+        const words = descriptionText.split(' ');
+        let truncated = '';
+        for (let word of words) {
+          const testText = truncated + (truncated ? ' ' : '') + word;
+          if (doc.widthOfString(testText + '...') <= maxDescriptionWidth) {
+            truncated = testText;
+          } else {
+            break;
+          }
+        }
+        descriptionText = truncated + '...';
+      }
+      
+      // Calculate dynamic row height based on truncated content
+      const descriptionHeight = doc.heightOfString(descriptionText, {
+        width: maxDescriptionWidth,
         align: 'left'
       });
       
@@ -268,11 +286,10 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       });
       x += colWidths[0];
       
-      // Description (with word wrapping and strict boundaries)
-      doc.text(item.description, x + 5, currentRowY, {
-        width: colWidths[1] - 15, // Reduced width for better containment
-        align: 'left',
-        ellipsis: true // Add ellipsis if text is too long
+      // Description (use pre-calculated truncated text)
+      doc.text(descriptionText, x + 5, currentRowY, {
+        width: maxDescriptionWidth,
+        align: 'left'
       });
       x += colWidths[1];
       
