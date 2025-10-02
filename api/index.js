@@ -203,7 +203,7 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
     const headers = ['Budget Code', 'Description', 'Quantity', 'Unit Price', 'Discount', 'Total', 'Total in MYR'];
     
     // Base widths for each column (optimized for A4 page width - total: 515px)
-    const baseWidths = [65, 150, 50, 60, 60, 60, 70];
+    const baseWidths = [75, 150, 45, 60, 60, 60, 65];
     
     // Calculate total base width
     const totalBaseWidth = baseWidths.reduce((sum, width) => sum + width, 0);
