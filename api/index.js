@@ -43,6 +43,13 @@ function getDeliveryAddress(campus, deliveryDepartment) {
 
 // Function to render text with hyperlink support for emails and URLs
 function renderTextWithLinks(doc, text, x, y, options = {}) {
+  // Validate inputs
+  if (!text || typeof text !== 'string') {
+    return doc.heightOfString('', { width: options.width || 200 });
+  }
+  if (typeof x !== 'number' || isNaN(x)) x = 0;
+  if (typeof y !== 'number' || isNaN(y)) y = 0;
+  
   const width = options.width || 200;
   const align = options.align || 'left';
   
@@ -59,17 +66,19 @@ function renderTextWithLinks(doc, text, x, y, options = {}) {
   
   for (let i = 0; i < words.length; i++) {
     const word = words[i];
-    const wordWidth = doc.widthOfString(word);
-    
-    if (currentLineWidth + wordWidth > width && currentLine !== '') {
-      // Render current line with links
-      renderLineWithLinks(doc, currentLine, x, currentY, align, width);
-      currentLine = word;
-      currentLineWidth = wordWidth;
-      currentY += lineHeight;
-    } else {
-      currentLine += word;
-      currentLineWidth += wordWidth;
+    if (word && typeof word === 'string') {
+      const wordWidth = doc.widthOfString(word);
+      
+      if (currentLineWidth + wordWidth > width && currentLine !== '') {
+        // Render current line with links
+        renderLineWithLinks(doc, currentLine, x, currentY, align, width);
+        currentLine = word;
+        currentLineWidth = wordWidth;
+        currentY += lineHeight;
+      } else {
+        currentLine += word;
+        currentLineWidth += wordWidth;
+      }
     }
   }
   
@@ -82,6 +91,12 @@ function renderTextWithLinks(doc, text, x, y, options = {}) {
 }
 
 function renderLineWithLinks(doc, line, x, y, align, maxWidth) {
+  // Validate inputs
+  if (!line || typeof line !== 'string') return;
+  if (typeof x !== 'number' || isNaN(x)) x = 0;
+  if (typeof y !== 'number' || isNaN(y)) y = 0;
+  if (typeof maxWidth !== 'number' || isNaN(maxWidth)) maxWidth = 200;
+  
   // Email regex pattern - matches [email](mailto:email) format
   const emailRegex = /\[([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\]\(mailto:[^)]+\)/g;
   // URL regex pattern - matches [text](url) format
@@ -98,23 +113,27 @@ function renderLineWithLinks(doc, line, x, y, align, maxWidth) {
   urlRegex.lastIndex = 0;
   
   while ((match = emailRegex.exec(line)) !== null) {
-    matches.push({
-      text: match[1], // Just the email address without brackets
-      start: match.index,
-      end: match.index + match[0].length,
-      type: 'email',
-      url: `mailto:${match[1]}`
-    });
+    if (match[1] && match[1].trim()) {
+      matches.push({
+        text: match[1].trim(), // Just the email address without brackets
+        start: match.index,
+        end: match.index + match[0].length,
+        type: 'email',
+        url: `mailto:${match[1].trim()}`
+      });
+    }
   }
   
   while ((match = urlRegex.exec(line)) !== null) {
-    matches.push({
-      text: match[1], // Just the display text
-      start: match.index,
-      end: match.index + match[0].length,
-      type: 'url',
-      url: match[2]
-    });
+    if (match[1] && match[2] && match[1].trim() && match[2].trim()) {
+      matches.push({
+        text: match[1].trim(), // Just the display text
+        start: match.index,
+        end: match.index + match[0].length,
+        type: 'url',
+        url: match[2].trim()
+      });
+    }
   }
   
   // Sort matches by start position
@@ -133,20 +152,22 @@ function renderLineWithLinks(doc, line, x, y, align, maxWidth) {
     // Render text before the link
     if (endIndex > startIndex) {
       const textBefore = line.substring(startIndex, endIndex);
-      const textWidth = doc.widthOfString(textBefore);
-      
-      if (align === 'center') {
-        currentX = x - textWidth / 2;
-      } else if (align === 'right') {
-        currentX = x - textWidth;
+      if (textBefore.trim()) {
+        const textWidth = doc.widthOfString(textBefore);
+        
+        if (align === 'center') {
+          currentX = x - textWidth / 2;
+        } else if (align === 'right') {
+          currentX = x - textWidth;
+        }
+        
+        doc.text(textBefore, currentX, y, { width: maxWidth - (currentX - x) });
+        currentX += textWidth;
       }
-      
-      doc.text(textBefore, currentX, y, { width: maxWidth - (currentX - x) });
-      currentX += textWidth;
     }
     
     // Render link if it exists
-    if (match) {
+    if (match && match.text && match.url) {
       const linkWidth = doc.widthOfString(match.text);
       
       if (align === 'center') {
@@ -155,14 +176,23 @@ function renderLineWithLinks(doc, line, x, y, align, maxWidth) {
         currentX = x - linkWidth;
       }
       
-      // Add link
-      doc.text(match.text, currentX, y, {
-        link: match.url,
-        underline: true,
-        color: 'blue',
-        width: maxWidth - (currentX - x)
-      });
-      currentX += linkWidth;
+      // Validate link URL before adding
+      if (match.url && match.url.trim() && !isNaN(currentX) && !isNaN(y)) {
+        try {
+          doc.text(match.text, currentX, y, {
+            link: match.url,
+            underline: true,
+            color: 'blue',
+            width: maxWidth - (currentX - x)
+          });
+        } catch (error) {
+          // If link fails, render as regular text
+          doc.text(match.text, currentX, y, {
+            width: maxWidth - (currentX - x)
+          });
+        }
+        currentX += linkWidth;
+      }
     }
   }
 }
@@ -395,10 +425,18 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       x += colWidths[0];
       
       // Description (with hyperlink support and strict boundaries)
-      const descriptionHeight = renderTextWithLinks(doc, item.description, x + 5, currentRowY, {
+      try {
+        const descriptionHeight = renderTextWithLinks(doc, item.description, x + 5, currentRowY, {
+          width: colWidths[1] - 10,
+          align: 'left'
+        });
+      } catch (error) {
+        // Fallback to regular text if hyperlink rendering fails
+      doc.text(item.description, x + 5, currentRowY, {
         width: colWidths[1] - 10,
         align: 'left'
       });
+      }
       x += colWidths[1];
       
       // Quantity
