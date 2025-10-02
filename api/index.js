@@ -253,14 +253,14 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
       x += colWidths[2];
       
       // Unit Price
-      doc.text(item.unitPrice.toFixed(2), x + 5, currentRowY, {
+      doc.text(item.unitPrice, x + 5, currentRowY, {
         width: colWidths[3] - 10,
         align: 'left'
       });
       x += colWidths[3];
       
       // Discount
-      doc.text(item.discount.toFixed(2), x + 5, currentRowY, {
+      doc.text(item.discount, x + 5, currentRowY, {
         width: colWidths[4] - 10,
         align: 'left'
       });
