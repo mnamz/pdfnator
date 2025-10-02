@@ -100,16 +100,17 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
           totalMYR: '100.00'
         }
       ],
-      budgetSpent: kissflowData.Budget_Spent && Array.isArray(kissflowData.Budget_Spent) ? kissflowData.Budget_Spent.map(budget => ({
-        budgetCode: budget.Budget_Code || 'DEFAULT-BUDGET',
-        originalAmount: `${budget.Original_Amount || '10,000'} USD`,
-        myrAmount: `${(budget.Original_Amount * 4.7).toFixed(2) || '47,000.00'} MYR`
-      })) : [
+      budgetSpent: [
         {
-          budgetCode: 'DEFAULT-BUDGET',
-          originalAmount: '10,000 USD',
-          myrAmount: '47,000.00 MYR'
-        }
+          budgetCode: kissflowData.GL_Code_1_ID || 'DEFAULT-BUDGET-1',
+          originalAmount: kissflowData.RFQ_GL_Code_1_Total_Original_Currency || '0.00 MYR',
+          myrAmount: kissflowData.GL_Code_1_Total_Amount_MYR || '0.00 MYR'
+        },
+        ...(kissflowData.GL_Code_2_Total_Amount_MYR && kissflowData.GL_Code_2_Total_Amount_MYR !== '0.0 MYR' ? [{
+          budgetCode: kissflowData.GL_Code_2_ID || 'DEFAULT-BUDGET-2',
+          originalAmount: kissflowData.RFQ_GL_Code_2_Total_Original_Currency || '0.00 MYR',
+          myrAmount: kissflowData.GL_Code_2_Total_Amount_MYR || '0.00 MYR'
+        }] : [])
       ]
     };
 
