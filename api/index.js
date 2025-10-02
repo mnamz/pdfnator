@@ -72,21 +72,21 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
         `${kissflowData.PO_City || ''} ${kissflowData.PO_State || ''} ${kissflowData.PO_Post_Code || ''}`.trim() || 'Default City, State, Post Code'
       ],
       deliveryTo: getDeliveryAddress(kissflowData.Requested_By_Campus, kissflowData.Delivery_Department),
-      items: kissflowData.Items && Array.isArray(kissflowData.Items) ? kissflowData.Items.map(item => ({
-        budgetCode: item.Budget_Code || 'DEFAULT-001',
-        description: item.Description || 'Sample Item',
-        quantity: item.Quantity || 1,
-        unitPrice: item.Unit_Price || 0.00,
-        discount: item.Discount || 0.00,
-        total: (item.Quantity * item.Unit_Price * (1 - item.Discount/100)).toFixed(2),
-        totalMYR: ((item.Quantity * item.Unit_Price * (1 - item.Discount/100)) * 4.7).toFixed(2)
+      items: kissflowData['Table::Model_DSakzWikms'] && Array.isArray(kissflowData['Table::Model_DSakzWikms']) ? kissflowData['Table::Model_DSakzWikms'].map(item => ({
+        budgetCode: item.RFQ_GL_Code || 'DEFAULT-001',
+        description: `${item.RFQ_Description || ''}\n${item.RFQ_Further_Description || ''}`.trim(),
+        quantity: item.RFQ_Quantity || 1,
+        unitPrice: parseFloat(item.RFQ_Unit_Price || 0).toFixed(2),
+        discount: parseFloat(item.Discount_Amount_MYR_1 ? item.Discount_Amount_MYR_1.replace(' MYR', '') : 0).toFixed(2),
+        total: parseFloat(item.RFQ_Total_INT || 0).toFixed(2),
+        totalMYR: item.RFQ_TOTAL_MYR ? item.RFQ_TOTAL_MYR.replace(' MYR', '') : '0.00'
       })) : [
         {
           budgetCode: 'DEFAULT-001',
           description: 'Sample Item\nDefault description for demonstration',
           quantity: 1,
-          unitPrice: 100.00,
-          discount: 0.00,
+          unitPrice: '100.00',
+          discount: '0.00',
           total: '100.00',
           totalMYR: '100.00'
         }
