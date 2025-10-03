@@ -103,11 +103,10 @@ app.get('/api/payment-request/:id', async (req, res) => {
        .font('Helvetica')
        .text(finalData.payFormNumber, 50, 180, { align: 'center' });
 
-    // Add requester and payment details table
+    // Add requester and payment details table with dynamic heights
     const tableTop = 220;
-    const rowHeight = 20;
-    const colWidths = [140, 160, 140, 160]; // Field1, Value1, Field2, Value2 - adjusted for department text
-    const tableHeight = 4 * rowHeight; // 4 rows total
+    const colWidths = [140, 160, 140, 160]; // Field1, Value1, Field2, Value2
+    let requesterCurrentRowY = tableTop;
     
     // Table data rows - 4 rows with 2 field-value pairs each
     const tableData = [
@@ -129,32 +128,60 @@ app.get('/api/payment-request/:id', async (req, res) => {
       ]
     ];
     
-    // Draw table rows
+    // Draw table rows with dynamic heights
     tableData.forEach((row, index) => {
-      const rowY = tableTop + (index * rowHeight);
+      // Calculate dynamic row height based on content
+      const label1Height = doc.heightOfString(row[0].label, {
+        width: colWidths[0] - 10,
+        align: 'left'
+      });
+      
+      const value1Height = doc.heightOfString(row[0].value, {
+        width: colWidths[1] - 10,
+        align: 'left'
+      });
+      
+      const label2Height = doc.heightOfString(row[1].label, {
+        width: colWidths[2] - 10,
+        align: 'left'
+      });
+      
+      const value2Height = doc.heightOfString(row[1].value, {
+        width: colWidths[3] - 10,
+        align: 'left'
+      });
+      
+      // Use the maximum height needed for this row
+      const rowHeight = Math.max(20, Math.max(label1Height, value1Height, label2Height, value2Height) + 10);
       
       // Draw row background
-      doc.rect(50, rowY, 500, rowHeight).stroke();
+      doc.rect(50, requesterCurrentRowY, 500, rowHeight).stroke();
       
       // Add row data - first field-value pair (ensure black color)
-      doc.fontSize(10).font('Helvetica').fillColor('black').text(row[0].label, 55, rowY + 5, { width: colWidths[0] });
-      doc.font('Helvetica').fillColor('black').text(row[0].value, 195, rowY + 5, { width: colWidths[1] });
+      doc.fontSize(10).font('Helvetica').fillColor('black').text(row[0].label, 55, requesterCurrentRowY + 5, { width: colWidths[0] - 10 });
+      doc.font('Helvetica').fillColor('black').text(row[0].value, 195, requesterCurrentRowY + 5, { width: colWidths[1] - 10 });
       
       // Add row data - second field-value pair (ensure black color)
-      doc.font('Helvetica').fillColor('black').text(row[1].label, 355, rowY + 5, { width: colWidths[2] });
-      doc.font('Helvetica').fillColor('black').text(row[1].value, 495, rowY + 5, { width: colWidths[3] });
+      doc.font('Helvetica').fillColor('black').text(row[1].label, 355, requesterCurrentRowY + 5, { width: colWidths[2] - 10 });
+      doc.font('Helvetica').fillColor('black').text(row[1].value, 495, requesterCurrentRowY + 5, { width: colWidths[3] - 10 });
       
       // Draw vertical lines
-      doc.moveTo(190, rowY)
-         .lineTo(190, rowY + rowHeight)
+      doc.moveTo(190, requesterCurrentRowY)
+         .lineTo(190, requesterCurrentRowY + rowHeight)
          .stroke();
-      doc.moveTo(350, rowY)
-         .lineTo(350, rowY + rowHeight)
+      doc.moveTo(350, requesterCurrentRowY)
+         .lineTo(350, requesterCurrentRowY + rowHeight)
          .stroke();
-      doc.moveTo(490, rowY)
-         .lineTo(490, rowY + rowHeight)
+      doc.moveTo(490, requesterCurrentRowY)
+         .lineTo(490, requesterCurrentRowY + rowHeight)
          .stroke();
+      
+      // Move to next row
+      requesterCurrentRowY += rowHeight;
     });
+    
+    // Calculate total table height
+    const tableHeight = requesterCurrentRowY - tableTop;
 
     // Draw second table - itemized budget details
     const table2Top = tableTop + tableHeight + 40; // Increased gap from 20 to 40
