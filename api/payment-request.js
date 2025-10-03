@@ -37,7 +37,7 @@ app.get('/api/payment-request/:id', async (req, res) => {
     // Map Kissflow response fields to template variables
     const finalData = {
       payFormNumber: kissflowData.PAY_Form_Number || 'PAY-DEFAULT-001',
-      requestedByFullName: kissflowData.Untitle_Field_4 || kissflowData.Requested_By_Full_Name || 'Default User',
+      requestedByFullName: kissflowData.Requester_Name_Hidden || kissflowData.Requested_By_Full_Name || 'Default User',
       requesterEmployeeId: kissflowData.Requested_By_Employee_Number || 'DEFAULT-001',
       requestedByEmail: kissflowData.Requested_By_Email || 'default@alice-smith.edu.my',
       requestedByDepartment: kissflowData.Requested_By_Department || 'Default Department',
@@ -106,7 +106,7 @@ app.get('/api/payment-request/:id', async (req, res) => {
     // Add requester and payment details table
     const tableTop = 220;
     const rowHeight = 20;
-    const colWidths = [120, 180, 120, 180]; // Field1, Value1, Field2, Value2
+    const colWidths = [140, 160, 140, 160]; // Field1, Value1, Field2, Value2 - adjusted for department text
     const tableHeight = 4 * rowHeight; // 4 rows total
     
     // Table data rows - 4 rows with 2 field-value pairs each
@@ -138,34 +138,34 @@ app.get('/api/payment-request/:id', async (req, res) => {
       
       // Add row data - first field-value pair (ensure black color)
       doc.fontSize(10).font('Helvetica').fillColor('black').text(row[0].label, 55, rowY + 5, { width: colWidths[0] });
-      doc.font('Helvetica').fillColor('black').text(row[0].value, 175, rowY + 5, { width: colWidths[1] });
+      doc.font('Helvetica').fillColor('black').text(row[0].value, 195, rowY + 5, { width: colWidths[1] });
       
       // Add row data - second field-value pair (ensure black color)
       doc.font('Helvetica').fillColor('black').text(row[1].label, 355, rowY + 5, { width: colWidths[2] });
-      doc.font('Helvetica').fillColor('black').text(row[1].value, 475, rowY + 5, { width: colWidths[3] });
+      doc.font('Helvetica').fillColor('black').text(row[1].value, 495, rowY + 5, { width: colWidths[3] });
       
       // Draw vertical lines
-      doc.moveTo(170, rowY)
-         .lineTo(170, rowY + rowHeight)
+      doc.moveTo(190, rowY)
+         .lineTo(190, rowY + rowHeight)
          .stroke();
       doc.moveTo(350, rowY)
          .lineTo(350, rowY + rowHeight)
          .stroke();
-      doc.moveTo(470, rowY)
-         .lineTo(470, rowY + rowHeight)
+      doc.moveTo(490, rowY)
+         .lineTo(490, rowY + rowHeight)
          .stroke();
     });
 
     // Draw second table - itemized budget details
     const table2Top = tableTop + tableHeight + 40; // Increased gap from 20 to 40
     
-    // Draw table header with borders
-    doc.rect(50, table2Top, 450, 20).stroke();
-    doc.rect(50, table2Top, 450, 20).fill('#e8e8e8');
+    // Draw table header with borders (same width as requester table)
+    doc.rect(50, table2Top, 500, 20).stroke();
+    doc.rect(50, table2Top, 500, 20).fill('#e8e8e8');
 
     // Add header texts
     const headers2 = ['Date', 'Reference', 'Description', 'Amount'];
-    const col2Widths = [80, 100, 180, 90];
+    const col2Widths = [100, 120, 200, 80]; // Adjusted to total 500px
     currentX = 50;
     
     headers2.forEach((header, i) => {
@@ -219,8 +219,8 @@ app.get('/api/payment-request/:id', async (req, res) => {
       // Use the maximum height needed for this row
       const rowHeight = Math.max(20, Math.max(dateHeight, referenceHeight, descriptionHeight, amountHeight) + 10);
       
-      // Draw row background and borders
-      doc.rect(50, currentRowY - 5, 450, rowHeight).stroke();
+      // Draw row background and borders (same width as requester table)
+      doc.rect(50, currentRowY - 5, 500, rowHeight).stroke();
       
       doc.font('Helvetica').fontSize(10).fillColor('black');
       
@@ -251,7 +251,7 @@ app.get('/api/payment-request/:id', async (req, res) => {
 
     // Draw bottom border of second table (using currentRowY position)
     doc.moveTo(50, currentRowY)
-       .lineTo(500, currentRowY)
+       .lineTo(550, currentRowY)
        .stroke();
 
     // Add total at bottom right
