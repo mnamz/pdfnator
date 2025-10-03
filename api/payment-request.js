@@ -105,14 +105,13 @@ app.get('/api/payment-request/:id', async (req, res) => {
 
     // Add requester and payment details table
     const tableTop = 220;
-    const colWidths = [200, 250];
-    let currentX = 50;
+    const tableHeight = 100; // Increased height for better visibility
+    
+    // Draw table background
+    doc.rect(50, tableTop, 450, tableHeight).fill('#f8f8f8');
+    doc.rect(50, tableTop, 450, tableHeight).stroke();
 
-    // Draw table header with borders
-    doc.rect(50, tableTop, 450, 80).stroke();
-    doc.rect(50, tableTop, 450, 80).fill('#f0f0f0');
-
-    // Add table data
+    // Add table data with proper spacing
     let currentRowY = tableTop + 10;
     
     // Row 1
@@ -143,7 +142,7 @@ app.get('/api/payment-request/:id', async (req, res) => {
     doc.font('Helvetica').text(finalData.paymentDate, 255, currentRowY + 15);
 
     // Draw second table - itemized budget details
-    const table2Top = tableTop + 100;
+    const table2Top = tableTop + tableHeight + 20;
     
     // Draw table header with borders
     doc.rect(50, table2Top, 450, 20).stroke();
