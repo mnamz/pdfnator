@@ -105,41 +105,51 @@ app.get('/api/payment-request/:id', async (req, res) => {
 
     // Add requester and payment details table
     const tableTop = 220;
-    const tableHeight = 100; // Increased height for better visibility
+    const rowHeight = 20;
+    const colWidths = [150, 350]; // Label column, Value column
+    const tableHeight = 8 * rowHeight; // 8 rows total
     
-    // Draw table background
-    doc.rect(50, tableTop, 450, tableHeight).fill('#f8f8f8');
-    doc.rect(50, tableTop, 450, tableHeight).stroke();
-
-    // Add table data with proper spacing
-    let currentRowY = tableTop + 10;
+    // Draw table header with borders
+    doc.rect(50, tableTop, 500, rowHeight).stroke();
+    doc.rect(50, tableTop, 500, rowHeight).fill('#e8e8e8');
     
-    // Row 1
-    doc.fontSize(10).font('Helvetica-Bold').text('Requested By Full Name:', 55, currentRowY);
-    doc.font('Helvetica').text(finalData.requestedByFullName, 255, currentRowY);
-    doc.font('Helvetica-Bold').text('Requester Employee ID:', 55, currentRowY + 15);
-    doc.font('Helvetica').text(finalData.requesterEmployeeId, 255, currentRowY + 15);
+    // Add header text
+    doc.fontSize(10).font('Helvetica-Bold').text('Field', 55, tableTop + 5, { width: colWidths[0] });
+    doc.font('Helvetica-Bold').text('Value', 205, tableTop + 5, { width: colWidths[1] });
     
-    // Row 2
-    currentRowY += 30;
-    doc.font('Helvetica-Bold').text('Requested By Email:', 55, currentRowY);
-    doc.font('Helvetica').text(finalData.requestedByEmail, 255, currentRowY);
-    doc.font('Helvetica-Bold').text('Requested By Department:', 55, currentRowY + 15);
-    doc.font('Helvetica').text(finalData.requestedByDepartment, 255, currentRowY + 15);
+    // Draw horizontal line after header
+    doc.moveTo(50, tableTop + rowHeight)
+       .lineTo(550, tableTop + rowHeight)
+       .stroke();
     
-    // Row 3
-    currentRowY += 30;
-    doc.font('Helvetica-Bold').text('Pay To:', 55, currentRowY);
-    doc.font('Helvetica').text(finalData.payTo, 255, currentRowY);
-    doc.font('Helvetica-Bold').text('Payment Method:', 55, currentRowY + 15);
-    doc.font('Helvetica').text(finalData.paymentMethod, 255, currentRowY + 15);
+    // Table data rows
+    const tableData = [
+      { label: 'Requested By Full Name', value: finalData.requestedByFullName },
+      { label: 'Requester Employee ID', value: finalData.requesterEmployeeId },
+      { label: 'Requested By Email', value: finalData.requestedByEmail },
+      { label: 'Requested By Department', value: finalData.requestedByDepartment },
+      { label: 'Pay To', value: finalData.payTo },
+      { label: 'Payment Method', value: finalData.paymentMethod },
+      { label: 'Budget Code', value: finalData.budgetCode },
+      { label: 'Payment Date', value: finalData.paymentDate }
+    ];
     
-    // Row 4
-    currentRowY += 30;
-    doc.font('Helvetica-Bold').text('Budget Code:', 55, currentRowY);
-    doc.font('Helvetica').text(finalData.budgetCode, 255, currentRowY);
-    doc.font('Helvetica-Bold').text('Payment Date:', 55, currentRowY + 15);
-    doc.font('Helvetica').text(finalData.paymentDate, 255, currentRowY + 15);
+    // Draw table rows
+    tableData.forEach((row, index) => {
+      const rowY = tableTop + rowHeight + (index * rowHeight);
+      
+      // Draw row background
+      doc.rect(50, rowY, 500, rowHeight).stroke();
+      
+      // Add row data
+      doc.fontSize(10).font('Helvetica').text(row.label, 55, rowY + 5, { width: colWidths[0] });
+      doc.font('Helvetica').text(row.value, 205, rowY + 5, { width: colWidths[1] });
+      
+      // Draw vertical lines
+      doc.moveTo(200, rowY)
+         .lineTo(200, rowY + rowHeight)
+         .stroke();
+    });
 
     // Draw second table - itemized budget details
     const table2Top = tableTop + tableHeight + 20;
