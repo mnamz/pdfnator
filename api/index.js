@@ -418,4 +418,8 @@ app.get('/api/generate-pdf/:id', async (req, res) => {
   }
 });
 
+// Import and use the payment request route
+const paymentRequestApp = require('./payment-request');
+app.use('/', paymentRequestApp);
+
 module.exports = app;
