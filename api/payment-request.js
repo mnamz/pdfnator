@@ -212,8 +212,9 @@ app.get('/api/payment-request/:id', async (req, res) => {
          .lineTo(500, table2Top + 20)
          .stroke();
 
-    // Add table data with dynamic row heights
+    // Add table data with dynamic row heights and page break handling
     let currentRowY = table2Top + 25;
+    let isFirstPage = true;
     
     finalData.paymentDetails.forEach((item, index) => {
       // Calculate dynamic row height based on content
@@ -239,6 +240,42 @@ app.get('/api/payment-request/:id', async (req, res) => {
       
       // Use the maximum height needed for this row
       const rowHeight = Math.max(20, Math.max(dateHeight, referenceHeight, descriptionHeight, amountHeight) + 10);
+      
+      // Check if we need a new page (leave space for total section)
+      if (currentRowY + rowHeight > doc.page.height - 100) {
+        doc.addPage();
+        currentRowY = 50; // Start from top of new page
+        
+        // Redraw table header on new page
+        doc.rect(50, currentRowY, 500, 20).stroke();
+        doc.rect(50, currentRowY, 500, 20).fill('#e8e8e8');
+        
+        // Add header texts on new page
+        let headerX = 50;
+        headers2.forEach((header, i) => {
+          doc.font('Helvetica-Bold')
+             .fillColor('black')
+             .text(header, headerX + 5, currentRowY + 5, { width: col2Widths[i] });
+          headerX += col2Widths[i];
+        });
+        
+        // Draw vertical lines for header on new page
+        headerX = 50;
+        for (let i = 0; i <= col2Widths.length; i++) {
+          doc.moveTo(headerX, currentRowY)
+             .lineTo(headerX, currentRowY + 20)
+             .stroke();
+          headerX += col2Widths[i] || 0;
+        }
+        
+        // Draw horizontal line after header on new page
+        doc.moveTo(50, currentRowY + 20)
+           .lineTo(500, currentRowY + 20)
+           .stroke();
+        
+        currentRowY += 25; // Move past header
+        isFirstPage = false;
+      }
       
       // Draw row background and borders (same width as requester table)
       doc.rect(50, currentRowY - 5, 500, rowHeight).stroke();
@@ -275,8 +312,13 @@ app.get('/api/payment-request/:id', async (req, res) => {
          .lineTo(550, currentRowY)
          .stroke();
 
-      // Add total at bottom right
-      const totalY = currentRowY + 20; // Position below the table
+      // Add total at bottom right - check if we need a new page for total
+      let totalY = currentRowY + 20;
+      if (totalY > doc.page.height - 50) {
+        doc.addPage();
+        totalY = 50;
+      }
+      
       doc.fontSize(12)
          .font('Helvetica-Bold')
          .fillColor('black')
