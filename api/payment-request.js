@@ -105,7 +105,7 @@ app.get('/api/payment-request/:id', async (req, res) => {
 
     // Add requester and payment details table with dynamic heights
     const tableTop = 220;
-    const colWidths = [130, 170, 130, 170]; // Field1, Value1, Field2, Value2 - increased value columns
+    const colWidths = [130, 170, 110, 190]; // Field1, Value1, Field2, Value2 - increased second value column for department
     let requesterCurrentRowY = tableTop;
     
     // Table data rows - 4 rows with 2 field-value pairs each
@@ -162,18 +162,18 @@ app.get('/api/payment-request/:id', async (req, res) => {
       doc.font('Helvetica').fillColor('black').text(row[0].value, 185, requesterCurrentRowY + 5, { width: colWidths[1] - 10 });
       
       // Add row data - second field-value pair (ensure black color)
-      doc.font('Helvetica').fillColor('black').text(row[1].label, 355, requesterCurrentRowY + 5, { width: colWidths[2] - 10 });
-      doc.font('Helvetica').fillColor('black').text(row[1].value, 485, requesterCurrentRowY + 5, { width: colWidths[3] - 10 });
+      doc.font('Helvetica').fillColor('black').text(row[1].label, 335, requesterCurrentRowY + 5, { width: colWidths[2] - 10 });
+      doc.font('Helvetica').fillColor('black').text(row[1].value, 445, requesterCurrentRowY + 5, { width: colWidths[3] - 10 });
       
       // Draw vertical lines
       doc.moveTo(180, requesterCurrentRowY)
          .lineTo(180, requesterCurrentRowY + rowHeight)
          .stroke();
-      doc.moveTo(350, requesterCurrentRowY)
-         .lineTo(350, requesterCurrentRowY + rowHeight)
+      doc.moveTo(330, requesterCurrentRowY)
+         .lineTo(330, requesterCurrentRowY + rowHeight)
          .stroke();
-      doc.moveTo(480, requesterCurrentRowY)
-         .lineTo(480, requesterCurrentRowY + rowHeight)
+      doc.moveTo(440, requesterCurrentRowY)
+         .lineTo(440, requesterCurrentRowY + rowHeight)
          .stroke();
       
       // Move to next row
