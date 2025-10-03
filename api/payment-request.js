@@ -45,19 +45,12 @@ app.get('/api/payment-request/:id', async (req, res) => {
       paymentMethod: kissflowData.Payment_Method || 'Default Method',
       budgetCode: kissflowData.Budget_Code_1_ID || 'DEFAULT-BUDGET',
       paymentDate: kissflowData.Payment_Date ? new Date(kissflowData.Payment_Date).toLocaleDateString('en-CA') : new Date().toLocaleDateString('en-CA'),
-      paymentDetails: kissflowData['Table::Payment_Request_Details_Budget_Code_1'] && Array.isArray(kissflowData['Table::Payment_Request_Details_Budget_Code_1']) ? kissflowData['Table::Payment_Request_Details_Budget_Code_1'].map(item => ({
+      paymentDetails: kissflowData['Table::Payment_Request_Details_Budget_Code_1'] && Array.isArray(kissflowData['Table::Payment_Request_Details_Budget_Code_1']) && kissflowData['Table::Payment_Request_Details_Budget_Code_1'].length > 0 ? kissflowData['Table::Payment_Request_Details_Budget_Code_1'].map(item => ({
         date: item.Transaction_Date_Input ? new Date(item.Transaction_Date_Input).toLocaleDateString('en-CA') : new Date().toLocaleDateString('en-CA'),
-        reference: item.Document_Reference_1 || 'Default Reference',
-        description: extractEmailFromDescription(item.Description || 'Default Description'),
+        reference: item.Document_Reference_1 || '',
+        description: extractEmailFromDescription(item.Decsription || ''),
         amount: item.Amount_MYR || '0.00'
-      })) : [
-        {
-          date: new Date().toLocaleDateString('en-CA'),
-          reference: 'Default Reference',
-          description: 'Default Description',
-          amount: '0.00'
-        }
-      ],
+      })) : [],
       totalSpent: kissflowData.Table_1_Spent_MYR || '0.00 MYR'
     };
 
@@ -183,40 +176,41 @@ app.get('/api/payment-request/:id', async (req, res) => {
     // Calculate total table height
     const tableHeight = requesterCurrentRowY - tableTop;
 
-    // Draw second table - itemized budget details
-    const table2Top = tableTop + tableHeight + 40; // Increased gap from 20 to 40
-    
-    // Draw table header with borders (same width as requester table)
-    doc.rect(50, table2Top, 500, 20).stroke();
-    doc.rect(50, table2Top, 500, 20).fill('#e8e8e8');
-
-    // Add header texts
-    const headers2 = ['Date', 'Reference', 'Description', 'Amount'];
-    const col2Widths = [100, 120, 200, 80]; // Adjusted to total 500px
-    currentX = 50;
-    
-    headers2.forEach((header, i) => {
-      doc.font('Helvetica-Bold')
-         .fillColor('black')
-         .text(header, currentX + 5, table2Top + 5, { width: col2Widths[i] });
+    // Draw second table - itemized budget details (only if there are payment details)
+    if (finalData.paymentDetails.length > 0) {
+      const table2Top = tableTop + tableHeight + 40; // Increased gap from 20 to 40
       
-      // Draw vertical lines
-      if (i < headers2.length) {
-        doc.moveTo(currentX, table2Top)
-           .lineTo(currentX, table2Top + 20 + (finalData.paymentDetails.length * 20))
-           .stroke();
-      }
-      currentX += col2Widths[i];
-    });
-    // Last vertical line
-    doc.moveTo(currentX, table2Top)
-       .lineTo(currentX, table2Top + 20 + (finalData.paymentDetails.length * 20))
-       .stroke();
+      // Draw table header with borders (same width as requester table)
+      doc.rect(50, table2Top, 500, 20).stroke();
+      doc.rect(50, table2Top, 500, 20).fill('#e8e8e8');
 
-    // Draw horizontal line after header
-    doc.moveTo(50, table2Top + 20)
-       .lineTo(500, table2Top + 20)
-       .stroke();
+      // Add header texts
+      const headers2 = ['Date', 'Reference', 'Description', 'Amount'];
+      const col2Widths = [100, 120, 200, 80]; // Adjusted to total 500px
+      currentX = 50;
+      
+      headers2.forEach((header, i) => {
+        doc.font('Helvetica-Bold')
+           .fillColor('black')
+           .text(header, currentX + 5, table2Top + 5, { width: col2Widths[i] });
+        
+        // Draw vertical lines
+        if (i < headers2.length) {
+          doc.moveTo(currentX, table2Top)
+             .lineTo(currentX, table2Top + 20 + (finalData.paymentDetails.length * 20))
+             .stroke();
+        }
+        currentX += col2Widths[i];
+      });
+      // Last vertical line
+      doc.moveTo(currentX, table2Top)
+         .lineTo(currentX, table2Top + 20 + (finalData.paymentDetails.length * 20))
+         .stroke();
+
+      // Draw horizontal line after header
+      doc.moveTo(50, table2Top + 20)
+         .lineTo(500, table2Top + 20)
+         .stroke();
 
     // Add table data with dynamic row heights
     let currentRowY = table2Top + 25;
@@ -276,18 +270,27 @@ app.get('/api/payment-request/:id', async (req, res) => {
       currentRowY += rowHeight;
     });
 
-    // Draw bottom border of second table (using currentRowY position)
-    doc.moveTo(50, currentRowY)
-       .lineTo(550, currentRowY)
-       .stroke();
+      // Draw bottom border of second table (using currentRowY position)
+      doc.moveTo(50, currentRowY)
+         .lineTo(550, currentRowY)
+         .stroke();
 
-    // Add total at bottom right
-    const totalY = currentRowY + 20; // Position below the table
-    doc.fontSize(12)
-       .font('Helvetica-Bold')
-       .fillColor('black')
-       .text('Total:', 350, totalY)
-       .text(finalData.totalSpent, 400, totalY);
+      // Add total at bottom right
+      const totalY = currentRowY + 20; // Position below the table
+      doc.fontSize(12)
+         .font('Helvetica-Bold')
+         .fillColor('black')
+         .text('Total:', 350, totalY)
+         .text(finalData.totalSpent, 400, totalY);
+    } else {
+      // If no payment details, just show the total
+      const totalY = tableTop + tableHeight + 60; // Position below the requester table
+      doc.fontSize(12)
+         .font('Helvetica-Bold')
+         .fillColor('black')
+         .text('Total:', 350, totalY)
+         .text(finalData.totalSpent, 400, totalY);
+    }
 
     // Finalize the PDF and end the stream
     doc.end();
