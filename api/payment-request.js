@@ -5,7 +5,8 @@ const axios = require('axios');
 const app = express();
 
 // Base64 encoded logo - replace this with your actual logo
-const logoBase64 = `data:image/jpeg;base64,/9j/4Qd9RXhpZgAATU0AKgAAAAgADAEAAAMAAAABDQUAAAEBAAMAAAABA0EAAAECAAMAAAADAAAAngEGAAMAAAABAAIAAAESAAMAAAABAAEAAAEVAAMAAAABAAMAAAEaAAUAAAABAAAApAEbAAUAAAABAAAArAEoAAMAAAABAAIAAAExAAIAAAAhAAAAtAEyAAIAAAAUAAAA1YdpAAQAAAABAAAA7AAAASQACAAIAAgALcbAAAAnEAAtxsAAACcQQWRvYmUgUGhvdG9zaG9wIDI1LjEgKE1hY2ludG9zaCkAMjAyNDowNjoyMCAwNzo1MTozOAAAAAAABJAAAAcAAAAEMDIzMaABAAMAAAAB//8AAKACAAQAAAABAAALoKADAAQAAAABAAAB0AAAAAAAAAAGAQMAAwAAAAEABgAAARoABQAAAAEAAAFyARsABQAAAAEAAAF6ASgAAwAAAAEAAgAAAgEABAAAAAEAAAGCAgIABAAAAAEAAAXzAAAAAAAAAEgAAAABAAAASAAAAAH/2P/tAAxBZG9iZV9DTQAC/+4ADkFkb2JlAGSAAAAAAf/bAIQADAgICAkIDAkJDBELCgsRFQ8MDA8VGBMTFRMTGBEMDAwMDAwRDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAENCwsNDg0QDg4QFA4ODhQUDg4ODhQRDAwMDAwREQwMDAwMDBEMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM/8AAEQgAGQCgAwEiAAIRAQMRAf/dAAQACv/EAT8AAAEFAQEBAQEBAAAAAAAAAAMAAQIEBQYHCAkKCwEAAQUBAQEBAQEAAAAAAAAAAQACAwQFBgcICQoLEAABBAEDAgQCBQcGCAUDDDMBAAIRAwQhEjEFQVFhEyJxgTIGFJGhsUIjJBVSwWIzNHKC0UMHJZJT8OHxY3M1FqKyg [... omitted end of long line]`;
+// Using a simple 1x1 transparent PNG as placeholder
+const logoBase64 = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77CwAAAABJRU5ErkJggg==`;
 
 // Function to clean up mailto formatting in description text
 function extractEmailFromDescription(text) {
@@ -78,13 +79,18 @@ app.get('/api/payment-request/:id', async (req, res) => {
 
     // Add logo
     if (logoBase64) {
-      const logoHeight = 80; // Increased height for better visibility
-      const logoX = 50; // Start from left margin
-      
-      doc.image(logoBase64, logoX, 50, {
-        width: pageWidth,
-        height: logoHeight
-      });
+      try {
+        const logoHeight = 80; // Increased height for better visibility
+        const logoX = 50; // Start from left margin
+        
+        doc.image(logoBase64, logoX, 50, {
+          width: pageWidth,
+          height: logoHeight
+        });
+      } catch (logoError) {
+        console.warn('Logo rendering failed, continuing without logo:', logoError.message);
+        // Continue without logo if it fails
+      }
     }
 
     // Add title
