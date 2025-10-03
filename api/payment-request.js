@@ -106,8 +106,8 @@ app.get('/api/payment-request/:id', async (req, res) => {
     // Add requester and payment details table
     const tableTop = 220;
     const rowHeight = 20;
-    const colWidths = [150, 350]; // Label column, Value column
-    const tableHeight = 8 * rowHeight; // 8 rows total
+    const colWidths = [120, 180, 120, 180]; // Field1, Value1, Field2, Value2
+    const tableHeight = 4 * rowHeight; // 4 rows total
     
     // Draw table header with borders
     doc.rect(50, tableTop, 500, rowHeight).stroke();
@@ -115,23 +115,33 @@ app.get('/api/payment-request/:id', async (req, res) => {
     
     // Add header text
     doc.fontSize(10).font('Helvetica-Bold').text('Field', 55, tableTop + 5, { width: colWidths[0] });
-    doc.font('Helvetica-Bold').text('Value', 205, tableTop + 5, { width: colWidths[1] });
+    doc.font('Helvetica-Bold').text('Value', 175, tableTop + 5, { width: colWidths[1] });
+    doc.font('Helvetica-Bold').text('Field', 355, tableTop + 5, { width: colWidths[2] });
+    doc.font('Helvetica-Bold').text('Value', 475, tableTop + 5, { width: colWidths[3] });
     
     // Draw horizontal line after header
     doc.moveTo(50, tableTop + rowHeight)
        .lineTo(550, tableTop + rowHeight)
        .stroke();
     
-    // Table data rows
+    // Table data rows - 4 rows with 2 field-value pairs each
     const tableData = [
-      { label: 'Requested By Full Name', value: finalData.requestedByFullName },
-      { label: 'Requester Employee ID', value: finalData.requesterEmployeeId },
-      { label: 'Requested By Email', value: finalData.requestedByEmail },
-      { label: 'Requested By Department', value: finalData.requestedByDepartment },
-      { label: 'Pay To', value: finalData.payTo },
-      { label: 'Payment Method', value: finalData.paymentMethod },
-      { label: 'Budget Code', value: finalData.budgetCode },
-      { label: 'Payment Date', value: finalData.paymentDate }
+      [
+        { label: 'Requested By Full Name', value: finalData.requestedByFullName },
+        { label: 'Requester Employee ID', value: finalData.requesterEmployeeId }
+      ],
+      [
+        { label: 'Requested By Email', value: finalData.requestedByEmail },
+        { label: 'Requested By Department', value: finalData.requestedByDepartment }
+      ],
+      [
+        { label: 'Pay To', value: finalData.payTo },
+        { label: 'Payment Method', value: finalData.paymentMethod }
+      ],
+      [
+        { label: 'Budget Code', value: finalData.budgetCode },
+        { label: 'Payment Date', value: finalData.paymentDate }
+      ]
     ];
     
     // Draw table rows
@@ -141,13 +151,23 @@ app.get('/api/payment-request/:id', async (req, res) => {
       // Draw row background
       doc.rect(50, rowY, 500, rowHeight).stroke();
       
-      // Add row data
-      doc.fontSize(10).font('Helvetica').text(row.label, 55, rowY + 5, { width: colWidths[0] });
-      doc.font('Helvetica').text(row.value, 205, rowY + 5, { width: colWidths[1] });
+      // Add row data - first field-value pair
+      doc.fontSize(10).font('Helvetica').text(row[0].label, 55, rowY + 5, { width: colWidths[0] });
+      doc.font('Helvetica').text(row[0].value, 175, rowY + 5, { width: colWidths[1] });
+      
+      // Add row data - second field-value pair
+      doc.font('Helvetica').text(row[1].label, 355, rowY + 5, { width: colWidths[2] });
+      doc.font('Helvetica').text(row[1].value, 475, rowY + 5, { width: colWidths[3] });
       
       // Draw vertical lines
-      doc.moveTo(200, rowY)
-         .lineTo(200, rowY + rowHeight)
+      doc.moveTo(170, rowY)
+         .lineTo(170, rowY + rowHeight)
+         .stroke();
+      doc.moveTo(350, rowY)
+         .lineTo(350, rowY + rowHeight)
+         .stroke();
+      doc.moveTo(470, rowY)
+         .lineTo(470, rowY + rowHeight)
          .stroke();
     });
 
